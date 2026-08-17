@@ -39,7 +39,8 @@ export function renderPVFlow(
 		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
 		: 1;
 	const dotRadius =
-		Math.min(2 + lineWidth + Math.max(minLineWidth - 2, 0), 8) * (2 / 3);
+		Math.min(2 + lineWidth + Math.max(minLineWidth - 2, 0), 8) *
+		(2 / 3);
 	// Làm tròn dur về 2 chữ số thập phân để làm "key" — ép Lit tạo lại
 	// hoàn toàn nhóm chấm mỗi khi tốc độ đổi đáng kể (W tăng/giảm nhanh),
 	// tránh timeline SMIL của animateMotion bị lệch dần do chỉ vá thuộc

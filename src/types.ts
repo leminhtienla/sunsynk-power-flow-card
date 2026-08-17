@@ -629,6 +629,7 @@ export interface DataDto {
 	batteryPercentageEps;
 	homeLoadCycleColours: string[];
 	epsCycleColours: string[];
+	inverterCycleColours: string[];
 	batteryChargeCycleColours: string[];
 	dynamicColourEssentialLoad1;
 	dynamicColourEssentialLoad2;

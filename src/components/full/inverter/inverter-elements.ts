@@ -188,7 +188,7 @@ export const renderInverterElements = (
 				'1;0',
 				'#inverter-path',
 				false,
-				data.epsCycleColours,
+				data.inverterCycleColours,
 			)}
 			${renderCircle(
 				'inverter-dot',
@@ -203,7 +203,7 @@ export const renderInverterElements = (
 				'0;1',
 				'#inverter-path',
 				false,
-				data.epsCycleColours,
+				data.inverterCycleColours,
 			)}
 			${guard(
 				[
@@ -248,11 +248,9 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							data.stateUseTimer.state == 'on' && enableTimer !== 'no'
-								? ''
-								: 'none'
-						}"
+						display="${data.stateUseTimer.state == 'on' && enableTimer !== 'no'
+							? ''
+							: 'none'}"
 						fill="${inverterColour}"
 						d="${icons.timerOn}"
 					/>
@@ -267,11 +265,9 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							data.stateUseTimer.state == 'off' && enableTimer !== 'no'
-								? ''
-								: 'none'
-						}"
+						display="${data.stateUseTimer.state == 'off' && enableTimer !== 'no'
+							? ''
+							: 'none'}"
 						fill="${inverterColour}"
 						d="${icons.timerOff}"
 					/>
@@ -309,11 +305,10 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							priorityLoad === 'off' && (priorityLoad !== 'no' || !priorityLoad)
-								? ''
-								: 'none'
-						}"
+						display="${priorityLoad === 'off' &&
+						(priorityLoad !== 'no' || !priorityLoad)
+							? ''
+							: 'none'}"
 						fill="${inverterColour}"
 						d="${icons.priorityLoadOff}"
 					/>
@@ -328,11 +323,10 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							priorityLoad === 'on' && (priorityLoad !== 'no' || !priorityLoad)
-								? ''
-								: 'none'
-						}"
+						display="${priorityLoad === 'on' &&
+						(priorityLoad !== 'no' || !priorityLoad)
+							? ''
+							: 'none'}"
 						fill="${inverterColour}"
 						d="${icons.priorityLoadOn}"
 					/>
@@ -356,21 +350,19 @@ export const renderInverterElements = (
 					localize('common.priority_batt'),
 				)}
 			</a>
-			${
-				config.inverter?.navigate
-					? svg`
+			${config.inverter?.navigate
+				? svg`
                     <a href="#" @click=${(e) => Utils.handleNavigation(e, config.inverter.navigate)}>
                         <image x="155" y="224.75" width="53" height="72"
                             class="${!data.genericInverterImage ? '' : 'st12'}"
                             href="${inverterImg}"
                             preserveAspectRatio="none"/>
                     </a>`
-					: svg`
+				: svg`
                     <image x="155" y="224.75" width="53" height="72"
                         class="${!data.genericInverterImage ? '' : 'st12'}"
                         href="${inverterImg}"
-                        preserveAspectRatio="none"/>`
-			}
+                        preserveAspectRatio="none"/>`}
 			<a
 				href="#"
 				@click=${(e) => Utils.handlePopup(e, data.inverterProg.entityID)}
@@ -385,18 +377,14 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							data.inverterProg.show === false || enableTimer === 'no'
-								? 'none'
-								: ''
-						}"
-						class="${
-							data.inverterProg.charge === 'none' ||
-							(data.stateUseTimer.state != 'off' &&
-								data.stateUseTimer.state != 'on')
-								? 'st12'
-								: ''
-						}"
+						display="${data.inverterProg.show === false || enableTimer === 'no'
+							? 'none'
+							: ''}"
+						class="${data.inverterProg.charge === 'none' ||
+						(data.stateUseTimer.state != 'off' &&
+							data.stateUseTimer.state != 'on')
+							? 'st12'
+							: ''}"
 						fill="${inverterColour}"
 						d="${icons.progGridOn}"
 					/>
@@ -411,18 +399,14 @@ export const renderInverterElements = (
 					viewBox="0 0 24 24"
 				>
 					<path
-						display="${
-							data.inverterProg.show === false || enableTimer === 'no'
-								? 'none'
-								: ''
-						}"
-						class="${
-							data.inverterProg.charge === 'none' &&
-							(data.stateUseTimer.state === 'off' ||
-								data.stateUseTimer.state === 'on')
-								? ''
-								: 'st12'
-						}"
+						display="${data.inverterProg.show === false || enableTimer === 'no'
+							? 'none'
+							: ''}"
+						class="${data.inverterProg.charge === 'none' &&
+						(data.stateUseTimer.state === 'off' ||
+							data.stateUseTimer.state === 'on')
+							? ''
+							: 'st12'}"
 						fill="${inverterColour}"
 						d="${icons.progGridOff}"
 					/>
@@ -496,23 +480,19 @@ export const renderInverterElements = (
 				`AC: ${Utils.formatNumberLocale(data.stateRadiatorTemp.toNum(1), 1)}°`,
 				(e) => Utils.handlePopup(e, config.entities.radiator_temp_91),
 			)}
-			${
-				config.entities?.inverter_status_text
-					? svg`
+			${config.entities?.inverter_status_text
+				? svg`
                     ${createTextWithPopup(
-											'inverter_status_text',
-											212,
-											250,
-											!!statusTextLine1,
-											'st3 left-align',
-											inverterColour,
-											statusTextLine1,
-											(e) =>
-												Utils.handlePopup(
-													e,
-													config.entities.inverter_status_text,
-												),
-										)}
+						'inverter_status_text',
+						212,
+						250,
+						!!statusTextLine1,
+						'st3 left-align',
+						inverterColour,
+						statusTextLine1,
+						(e) =>
+							Utils.handlePopup(e, config.entities.inverter_status_text),
+					)}
                     ${
 											statusTextLine2
 												? createTextWithPopup(
@@ -532,11 +512,9 @@ export const renderInverterElements = (
 												: ''
 										}
                 `
-					: ''
-			}
-			${
-				config.entities?.eps_voltage
-					? svg`
+				: ''}
+			${config.entities?.eps_voltage
+				? svg`
                     <rect
 						x="${[3, 4].includes(config.solar?.mppts) ? '188.5' : '145.15'}"
 						y="95"
@@ -549,50 +527,42 @@ export const renderInverterElements = (
 						pointer-events="all"
 					/>
                     ${createTextWithPopup(
-											'eps_voltage',
-											[3, 4].includes(config.solar?.mppts) ? 223.5 : 180.15,
-											110,
-											false,
-											`${largeFont !== true ? 'st14' : 'st4'} st8`,
-											epsFlowColour,
-											`${Utils.formatNumberLocale(data.epsVoltage, 0)} V`,
-											(e) => Utils.handlePopup(e, config.entities.eps_voltage),
-											true,
-										)}
-                    ${
-											config.entities?.eps_frequency
-												? createTextWithPopup(
-														'eps_frequency',
-														[3, 4].includes(config.solar?.mppts)
-															? 223.5
-															: 180.15,
-														130,
-														false,
-														`${largeFont !== true ? 'st14' : 'st4'} st8`,
-														epsFlowColour,
-														`${Utils.formatNumberLocale(data.epsFrequency, 1)} Hz`,
-														(e) =>
-															Utils.handlePopup(
-																e,
-																config.entities.eps_frequency,
-															),
-														true,
-													)
-												: ''
-										}
+						'eps_voltage',
+						[3, 4].includes(config.solar?.mppts) ? 223.5 : 180.15,
+						110,
+						false,
+						`${largeFont !== true ? 'st14' : 'st4'} st8`,
+						epsFlowColour,
+						`${Utils.formatNumberLocale(data.epsVoltage, 0)} V`,
+						(e) => Utils.handlePopup(e, config.entities.eps_voltage),
+						true,
+					)}
+                    ${config.entities?.eps_frequency
+						? createTextWithPopup(
+								'eps_frequency',
+								[3, 4].includes(config.solar?.mppts) ? 223.5 : 180.15,
+								130,
+								false,
+								`${largeFont !== true ? 'st14' : 'st4'} st8`,
+								epsFlowColour,
+								`${Utils.formatNumberLocale(data.epsFrequency, 1)} Hz`,
+								(e) =>
+									Utils.handlePopup(e, config.entities.eps_frequency),
+								true,
+							)
+						: ''}
                     ${renderText(
-											'eps_v_hz_label',
-											[3, 4].includes(config.solar?.mppts) ? 243.5 : 200.15,
-											148,
-											false,
-											'st3',
-											epsFlowColour, // Label EPS trong khung V/Hz theo màu flow động (PV/Pin)
-											'EPS',
-											true,
-										)}
+						'eps_v_hz_label',
+						[3, 4].includes(config.solar?.mppts) ? 243.5 : 200.15,
+						148,
+						false,
+						'st3',
+						epsFlowColour, // Label EPS trong khung V/Hz theo màu flow động (PV/Pin)
+						'EPS',
+						true,
+					)}
                 `
-					: ''
-			}
+				: ''}
 			${createTextWithPopup(
 				'dc_temp',
 				110,

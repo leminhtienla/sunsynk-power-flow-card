@@ -141,9 +141,7 @@ export const renderAuxLoadElements = (
 			<svg id="aux-flow">
 				${renderPath(
 					'aux-line',
-					[1, 2].includes(config.solar?.mppts)
-						? 'M 332 47 L 371 47'
-						: 'M 347 47 L 371 47',
+					[1, 2].includes(config.solar?.mppts) ? 'M 332 47 L 371 47' : 'M 347 47 L 371 47',
 					showAux,
 					data.epsFlowColour,
 					data.auxLineWidth,
@@ -176,135 +174,121 @@ export const renderAuxLoadElements = (
 				)}
 			</svg>
 			<svg id="aux1-flow">
-				${
-					config.entities?.eps_voltage
-						? svg`
+				${config.entities?.eps_voltage
+					? svg`
                     ${renderPath(
-											'aux-line2-lower',
-											// mppts 4/5/6: bắt nguồn từ điểm nối Inverter↔Grid-tie (đi cùng
-											// phía với grid2-line), bo cong lên đáy khung EPS — tránh đè
-											// lên cột PV thứ 2 khi bật 4 tấm trở lên.
-											// mppts 1/2/3: đường thẳng đứng đơn giản như thiết kế ban đầu.
-											[3, 4].includes(config.solar?.mppts)
-												? 'M 215 187 Q 223.5 187 223.5 177 L 223.5 140'
-												: 'M 180.15 162 L 180.15 140',
-											showAux,
-											data.epsFlowColour,
-											data.auxLineWidth,
-										)}
+						'aux-line2-lower',
+						// mppts 4/5/6: bắt nguồn từ điểm nối Inverter↔Grid-tie (đi cùng
+						// phía với grid2-line), bo cong lên đáy khung EPS — tránh đè
+						// lên cột PV thứ 2 khi bật 4 tấm trở lên.
+						// mppts 1/2/3: đường thẳng đứng đơn giản như thiết kế ban đầu.
+						[3, 4].includes(config.solar?.mppts)
+							? 'M 215 187 Q 223.5 187 223.5 177 L 223.5 140'
+							: 'M 180.15 162 L 180.15 140',
+						showAux,
+						data.epsFlowColour,
+						data.auxLineWidth,
+					)}
                     ${renderPath(
-											'aux-line2-upper',
-											// Đoạn trên: từ đỉnh khung V/Hz EPS lên và rẽ phải vào ô "0 W".
-											[3, 4].includes(config.solar?.mppts)
-												? 'M 223.5 95 L 223.5 57 Q 223.5 47 233.5 47 L 277 47'
-												: 'M 180.15 95 L 180.15 57 Q 180.15 47 190.15 47 L 262 47',
-											showAux,
-											data.epsFlowColour,
-											data.auxLineWidth,
-										)}
+						'aux-line2-upper',
+						// Đoạn trên: từ đỉnh khung V/Hz EPS lên và rẽ phải vào ô "0 W".
+						[3, 4].includes(config.solar?.mppts)
+							? 'M 223.5 95 L 223.5 57 Q 223.5 47 233.5 47 L 277 47'
+							: 'M 180.15 95 L 180.15 57 Q 180.15 47 190.15 47 L 262 47',
+						showAux,
+						data.epsFlowColour,
+						data.auxLineWidth,
+					)}
                     ${renderCircle(
-											'aux-dot-lower',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower <= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'0;1',
-											'#aux-line2-lower',
-											false,
-											data.epsCycleColours,
-										)}
+						'aux-dot-lower',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower <= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'0;1',
+						'#aux-line2-lower',
+						false,
+						data.epsCycleColours,
+					)}
                     ${renderCircle(
-											'aux-dot-lower',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower >= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'1;0',
-											'#aux-line2-lower',
-											false,
-											data.epsCycleColours,
-										)}
+						'aux-dot-lower',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower >= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'1;0',
+						'#aux-line2-lower',
+						false,
+						data.epsCycleColours,
+					)}
                     ${renderCircle(
-											'aux-dot-upper',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower <= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'0;1',
-											'#aux-line2-upper',
-											false,
-											data.epsCycleColours,
-										)}
+						'aux-dot-upper',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower <= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'0;1',
+						'#aux-line2-upper',
+						false,
+						data.epsCycleColours,
+					)}
                     ${renderCircle(
-											'aux-dot-upper',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower >= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'1;0',
-											'#aux-line2-upper',
-											false,
-											data.epsCycleColours,
-										)}
+						'aux-dot-upper',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower >= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'1;0',
+						'#aux-line2-upper',
+						false,
+						data.epsCycleColours,
+					)}
                 `
-						: svg`
+					: svg`
                     ${renderPath(
-											'aux-line2',
-											config.wide
-												? 'M 108 162 L 108 57 Q 108 47 118 47 L 277 47'
-												: 'M 180 162 L 180 57 Q 180 47 190 47 L 277 47',
-											showAux,
-											data.epsFlowColour,
-											data.auxLineWidth,
-										)}
+						'aux-line2',
+						config.wide
+							? 'M 108 162 L 108 57 Q 108 47 118 47 L 277 47'
+							: 'M 180 162 L 180 57 Q 180 47 190 47 L 277 47',
+						showAux,
+						data.epsFlowColour,
+						data.auxLineWidth,
+					)}
                     ${renderCircle(
-											'aux-dot',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower <= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'0;1',
-											'#aux-line2',
-											false,
-											data.epsCycleColours,
-										)}
+						'aux-dot',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower <= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'0;1',
+						'#aux-line2',
+						false,
+						data.epsCycleColours,
+					)}
                     ${renderCircle(
-											'aux-dot',
-											Math.min(
-												2 +
-													data.auxLineWidth +
-													Math.max(data.minLineWidth - 2, 0),
-												8,
-											),
-											auxPower >= 0 ? 'transparent' : data.epsFlowColour,
-											data.durationCur['aux'],
-											'1;0',
-											'#aux-line2',
-											false,
-											data.epsCycleColours,
-										)}
-                `
-				}
+						'aux-dot',
+						Math.min(
+							2 + data.auxLineWidth + Math.max(data.minLineWidth - 2, 0),
+							8,
+						),
+						auxPower >= 0 ? 'transparent' : data.epsFlowColour,
+						data.durationCur['aux'],
+						'1;0',
+						'#aux-line2',
+						false,
+						data.epsCycleColours,
+					)}
+                `}
 			</svg>
 			<!-- Aux Icon -->
 			<a
@@ -361,9 +345,9 @@ export const renderAuxLoadElements = (
 					<g
 						transform="translate(0.000000,91.000000) scale(0.100000,-0.100000)"
 						class="${!config.load.dynamic_icon && data.auxType === 'inverter' ? '' : 'st12'}"
-						display="${
-							!showAux || [1, 2].includes(additionalAuxLoad) ? 'none' : ''
-						}"
+						display="${!showAux || [1, 2].includes(additionalAuxLoad)
+							? 'none'
+							: ''}"
 						fill="${epsFlowColour}"
 						stroke="none"
 					>
@@ -371,27 +355,38 @@ export const renderAuxLoadElements = (
 					</g>
 				</svg>
 				<g
-					display="${
-						!showAux ||
-						[1, 2].includes(additionalAuxLoad) ||
-						config.load.dynamic_icon
-							? 'none'
-							: ''
-					}"
+					display="${!showAux ||
+					[1, 2].includes(additionalAuxLoad) ||
+					config.load.dynamic_icon
+						? 'none'
+						: ''}"
 				>
-					${renderIcon(undefined, data.auxType, 'eps-icon', 375, 8, 70, 70)}
+					${renderIcon(
+						undefined,
+						data.auxType,
+						'eps-icon',
+						375,
+						8,
+						70,
+						70,
+					)}
 				</g>
 				<g
-					display="${
-						!showAux ||
-						[1, 2].includes(additionalAuxLoad) ||
-						!config.load.dynamic_icon
-							? 'none'
-							: ''
-					}"
+					display="${!showAux ||
+					[1, 2].includes(additionalAuxLoad) ||
+					!config.load.dynamic_icon
+						? 'none'
+						: ''}"
 					transform="translate(375, 8) scale(2.9166666)"
 				>
-					<path d="${data.epsIcon}" fill="${epsFlowColour}" />
+					<path
+						d="${data.epsIcon}"
+						fill="${epsFlowColour === 'grey'
+							? 'grey'
+							: config.battery.dynamic_colour && config.load.dynamic_colour
+								? `url(#epsLg)`
+								: epsFlowColour}"
+					/>
 				</g>
 			</a>
 			<g display="${!showAux || additionalAuxLoad === 0 ? 'none' : ''}">
@@ -406,9 +401,9 @@ export const renderAuxLoadElements = (
 				)}
 			</g>
 			<g
-				display="${
-					!showAux || [0, 1].includes(additionalAuxLoad) ? 'none' : ''
-				}"
+				display="${!showAux || [0, 1].includes(additionalAuxLoad)
+					? 'none'
+					: ''}"
 			>
 				${renderIcon(
 					undefined,
@@ -433,9 +428,8 @@ export const renderAuxLoadElements = (
 				(e) => Utils.handlePopup(e, config.entities.day_aux_energy),
 				true,
 			)}
-			${
-				config.entities?.aux_power_166
-					? svg`
+			${config.entities?.aux_power_166
+				? svg`
                     ${createTextWithPopup(
 											'aux_power_166',
 											[1, 2].includes(config.solar?.mppts) ? 295 : 310,
@@ -459,7 +453,7 @@ export const renderAuxLoadElements = (
 												Utils.handlePopup(e, config.entities.aux_power_166),
 											true,
 										)}`
-					: svg`
+				: svg`
                     ${renderText(
 											'aux_power_166',
 											[1, 2].includes(config.solar?.mppts) ? 295 : 310,
@@ -480,8 +474,7 @@ export const renderAuxLoadElements = (
 															: auxPower || 0
 													} ${UnitOfPower.WATT}`,
 											true,
-										)}`
-			}
+										)}`}
 			${createTextWithPopup(
 				'aux_load1_value',
 				411,

@@ -671,7 +671,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 			attributes: { unit_of_measurement: '' },
 		});
 		const stateGridVoltage = this.getEntity('entities.grid_voltage', null);
-		const stateGridFrequency = this.getEntity('entities.grid_frequency', null);
+		const stateGridFrequency = this.getEntity(
+			'entities.grid_frequency',
+			null,
+		);
 		const statePrepaidUnits = this.getEntity('entities.prepaid_units');
 		const stateMaxSellPower = this.getEntity('entities.max_sell_power');
 
@@ -2364,6 +2367,40 @@ export class SunsynkPowerFlowCard extends LitElement {
 		if (pvPercentageEps > 0) epsCycleColours.push(solarColour);
 		if (batteryPercentageEps > 0) epsCycleColours.push(batteryColour);
 
+		// Mảng màu DOT cho 'inverter-path' và 'grid2-line' (icon Inverter <->
+		// khung Inverter <-> Grid-tie): phản ánh đúng thành phần PV/Pin của
+		// CHÍNH công suất Inverter đang xuất ra (displayInverterPower), khác
+		// với epsCycleColours (chỉ tính khi EPS hoạt động = mất Lưới, luôn
+		// rỗng khi đang bám Lưới) -- nếu dùng nhầm epsCycleColours ở đây, khi
+		// bám lưới (EPS không hoạt động, auxPower=0) mảng sẽ rỗng và dot rơi
+		// về màu gridColour tĩnh thay vì đúng PV/Pin thực tế của Inverter.
+		const pvPercentageRawInv =
+			totalPV > 0 && displayInverterPower > 0
+				? Utils.toNum((totalPV / displayInverterPower) * 100, 0)
+				: 0;
+		const batteryPercentageRawInv =
+			config.battery.invert_flow === true
+				? batteryPowerTotal >= 0
+					? 0
+					: displayInverterPower > 0
+						? Utils.toNum(
+								(Math.abs(batteryPowerTotal) / displayInverterPower) * 100,
+								0,
+							)
+						: 0
+				: batteryPowerTotal <= 0
+					? 0
+					: displayInverterPower > 0
+						? Utils.toNum(
+								(Math.abs(batteryPowerTotal) / displayInverterPower) * 100,
+								0,
+							)
+						: 0;
+		const inverterCycleColours: string[] = [];
+		if (pvPercentageRawInv > 0) inverterCycleColours.push(solarColour);
+		if (batteryPercentageRawInv > 0)
+			inverterCycleColours.push(batteryColour);
+
 		// Icon EPS LOAD biến thể theo nguồn chiếm ưu thế (giống essPv/essBat
 		// của Home Load nhưng chỉ 2 lựa chọn, không có essGrid).
 		let epsIcon: string;
@@ -2398,11 +2435,16 @@ export class SunsynkPowerFlowCard extends LitElement {
 		let epsSourceColour: string;
 		if (pvPercentageEps === 0 && batteryPercentageEps === 0) {
 			epsSourceColour = inverterColour;
-		} else if (epsPercentDiff < 10 && this._epsSourceColourPrev !== null) {
+		} else if (
+			epsPercentDiff < 10 &&
+			this._epsSourceColourPrev !== null
+		) {
 			epsSourceColour = this._epsSourceColourPrev;
 		} else {
 			epsSourceColour =
-				pvPercentageEps >= batteryPercentageEps ? solarColour : batteryColour;
+				pvPercentageEps >= batteryPercentageEps
+					? solarColour
+					: batteryColour;
 		}
 		this._epsSourceColourPrev = epsSourceColour;
 
@@ -3064,6 +3106,7 @@ export class SunsynkPowerFlowCard extends LitElement {
 			batteryPercentageEps,
 			homeLoadCycleColours,
 			epsCycleColours,
+			inverterCycleColours,
 			batteryChargeCycleColours,
 			dynamicColourEssentialLoad1,
 			dynamicColourEssentialLoad2,

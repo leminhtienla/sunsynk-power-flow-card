@@ -23,9 +23,8 @@ export const compactCard = (
 					titleKey,
 					html`
 						<h1
-							style="text-align: center; color: ${
-								config.title_colour || 'inherit'
-							}; font-size: ${config.title_size || '32px'};"
+							style="text-align: center; color: ${config.title_colour ||
+							'inherit'}; font-size: ${config.title_size || '32px'};"
 						>
 							${config.title}
 						</h1>
@@ -39,11 +38,9 @@ export const compactCard = (
 			<div class="container card">
 				${titleTemplate}
 				<svg
-					viewBox="${
-						config.wide
-							? '0 0 720 405'
-							: `${data.viewBoxXLite} ${data.viewBoxYLite} ${data.viewBoxWidthLite} ${data.viewBoxHeightLite}`
-					}"
+					viewBox="${config.wide
+						? '0 0 720 405'
+						: `${data.viewBoxXLite} ${data.viewBoxYLite} ${data.viewBoxWidthLite} ${data.viewBoxHeightLite}`}"
 					preserveAspectRatio="xMidYMid meet"
 					height="${data.cardHeight}"
 					width="${data.cardWidth}"

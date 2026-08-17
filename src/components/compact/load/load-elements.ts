@@ -524,14 +524,12 @@ export const renderLoadElements = (
 			</svg>
 			<svg
 				id="Esential-Load5"
-				style="overflow: visible; display: ${
-					[5, 6].includes(additionalLoad)
-						? config.wide ||
-							(!config.wide && [1, 2, 3].includes(config.solar.mppts))
-							? 'inline'
-							: 'none'
-						: `none`
-				};"
+				style="overflow: visible; display: ${[5, 6].includes(additionalLoad)
+					? config.wide ||
+						(!config.wide && [1, 2, 3].includes(config.solar.mppts))
+						? 'inline'
+						: 'none'
+					: `none`};"
 				x="${config.wide ? '-5%' : '-7.35%'}"
 			>
 				<rect
@@ -593,14 +591,12 @@ export const renderLoadElements = (
 			</svg>
 			<svg
 				id="Esential-Load6"
-				style="overflow: visible; display: ${
-					[6].includes(additionalLoad)
-						? config.wide ||
-							(!config.wide && [1, 2, 3].includes(config.solar.mppts))
-							? 'inline'
-							: 'none'
-						: `none`
-				};"
+				style="overflow: visible; display: ${[6].includes(additionalLoad)
+					? config.wide ||
+						(!config.wide && [1, 2, 3].includes(config.solar.mppts))
+						? 'inline'
+						: 'none'
+					: `none`};"
 				x="${config.wide ? '-5%' : '-7.35%'}"
 			>
 				<rect
@@ -689,9 +685,8 @@ export const renderLoadElements = (
 						}${auto_scale ? '' : ` ${UnitOfPower.WATT}`}`
 					: '0',
 			)}
-			${
-				config.inverter.three_phase && config.entities?.load_power_L1
-					? svg`<a
+			${config.inverter.three_phase && config.entities?.load_power_L1
+				? svg`<a
 							href="#"
 							@click=${(e: Event) => Utils.handlePopup(e, config.entities.load_power_L1)}
 						>
@@ -704,11 +699,9 @@ export const renderLoadElements = (
 								pointer-events="all"
 							/>
 						</a>`
-					: ''
-			}
-			${
-				config.inverter.three_phase && config.entities?.load_power_L2
-					? svg`<a
+				: ''}
+			${config.inverter.three_phase && config.entities?.load_power_L2
+				? svg`<a
 							href="#"
 							@click=${(e: Event) => Utils.handlePopup(e, config.entities.load_power_L2)}
 						>
@@ -721,11 +714,9 @@ export const renderLoadElements = (
 								pointer-events="all"
 							/>
 						</a>`
-					: ''
-			}
-			${
-				config.inverter.three_phase && config.entities?.load_power_L3
-					? svg`<a
+				: ''}
+			${config.inverter.three_phase && config.entities?.load_power_L3
+				? svg`<a
 							href="#"
 							@click=${(e: Event) => Utils.handlePopup(e, config.entities.load_power_L3)}
 						>
@@ -738,8 +729,7 @@ export const renderLoadElements = (
 								pointer-events="all"
 							/>
 						</a>`
-					: ''
-			}
+				: ''}
 			<svg id="load-flow">
 				${renderPath(
 					'es-line',
@@ -837,11 +827,9 @@ export const renderLoadElements = (
 			)}
 			<a
 				href="#"
-				@click=${
-					config.load?.navigate
-						? (e) => Utils.handleNavigation(e, config.load.navigate)
-						: null
-				}
+				@click=${config.load?.navigate
+					? (e) => Utils.handleNavigation(e, config.load.navigate)
+					: null}
 			>
 				<svg
 					id="essen"
@@ -861,35 +849,31 @@ export const renderLoadElements = (
 						>
 							<stop
 								offset="0%"
-								stop-color="${
-									data.gridPercentage > 0
-										? data.gridColour
-										: data.batteryPercentage > 0
-											? batteryColour
-											: solarColour
-								}"
+								stop-color="${data.gridPercentage > 0
+									? data.gridColour
+									: data.batteryPercentage > 0
+										? batteryColour
+										: solarColour}"
 							/>
 							<stop
 								offset="${data.gridPercentage}%"
-								stop-color="${
-									data.gridPercentage > 0
-										? data.gridColour
-										: data.batteryPercentage > 0
-											? batteryColour
-											: solarColour
-								}"
+								stop-color="${data.gridPercentage > 0
+									? data.gridColour
+									: data.batteryPercentage > 0
+										? batteryColour
+										: solarColour}"
 							/>
 							<stop
 								offset="${data.gridPercentage}%"
-								stop-color="${
-									data.batteryPercentage > 0 ? batteryColour : solarColour
-								}"
+								stop-color="${data.batteryPercentage > 0
+									? batteryColour
+									: solarColour}"
 							/>
 							<stop
 								offset="${data.gridPercentage + data.batteryPercentage}%"
-								stop-color="${
-									data.batteryPercentage > 0 ? batteryColour : solarColour
-								}"
+								stop-color="${data.batteryPercentage > 0
+									? batteryColour
+									: solarColour}"
 							/>
 							<stop
 								offset="${data.gridPercentage + data.batteryPercentage}%"
@@ -915,10 +899,9 @@ export const renderLoadElements = (
 				(e) => Utils.handlePopup(e, config.entities.day_load_energy_84),
 				true,
 			)}
-			${
-				config.entities?.essential_power &&
-				config.entities.essential_power !== 'none'
-					? svg`
+			${config.entities?.essential_power &&
+			config.entities.essential_power !== 'none'
+				? svg`
                     ${createTextWithPopup(
 											'ess_power',
 											340.1,
@@ -932,7 +915,7 @@ export const renderLoadElements = (
 											(e) =>
 												Utils.handlePopup(e, config.entities.essential_power),
 										)}`
-					: svg`
+				: svg`
                     ${renderText(
 											'ess_power',
 											340.1,
@@ -943,8 +926,7 @@ export const renderLoadElements = (
 											auto_scale
 												? `${Utils.convertValue(essentialPower, decimalPlaces) || 0}`
 												: `${essentialPower || 0} ${UnitOfPower.WATT}`,
-										)}`
-			}
+										)}`}
 			${guard(
 				[
 					data.additionalLoad,

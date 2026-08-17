@@ -36,7 +36,9 @@ export class Utils {
 		// null/undefined/NaN (VD entity chưa có state hợp lệ) -- lỗi này từng
 		// khiến cả phần render chứa nó bị hỏng âm thầm (hiển thị trống).
 		const safeValue =
-			value === null || value === undefined || Number.isNaN(value) ? 0 : value;
+			value === null || value === undefined || Number.isNaN(value)
+				? 0
+				: value;
 		const fractionDigits = Number.isNaN(decimals) ? 2 : decimals;
 
 		// Prefer Home Assistant's configured number format if available

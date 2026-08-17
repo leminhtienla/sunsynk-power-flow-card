@@ -15,7 +15,11 @@ export interface CustomEntity extends HassEntity {
 	state: string;
 	decimals: number;
 	measurement:
-		UnitOfPower | UnitOfEnergy | UnitOfElectricalCurrent | Percentage | 'NA';
+		| UnitOfPower
+		| UnitOfEnergy
+		| UnitOfElectricalCurrent
+		| Percentage
+		| 'NA';
 
 	/**
 	 * Extension of Utils.toNum, returns the state in a number
@@ -159,7 +163,11 @@ const __CONVERT_ENTITY_CACHE_MAX = 4096;
 function toDisplayFunction(
 	state: string,
 	measurement:
-		UnitOfPower | UnitOfEnergy | UnitOfElectricalCurrent | Percentage | 'NA',
+		| UnitOfPower
+		| UnitOfEnergy
+		| UnitOfElectricalCurrent
+		| Percentage
+		| 'NA',
 	decimals?: number,
 ): string {
 	//console.log(state, measurement, decimals);

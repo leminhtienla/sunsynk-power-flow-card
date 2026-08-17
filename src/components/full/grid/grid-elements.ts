@@ -96,9 +96,9 @@ export const renderGridElements = (
 		<!-- Grid Elements -->
 		<svg
 			id="Grid"
-			style="overflow: visible; display: ${
-				!config.show_grid ? 'none' : 'inline'
-			};"
+			style="overflow: visible; display: ${!config.show_grid
+				? 'none'
+				: 'inline'};"
 			x="${config.wide ? '30%' : '3%'}"
 			y="2.5%"
 		>
@@ -111,11 +111,10 @@ export const renderGridElements = (
 					height="20"
 					rx="4.5"
 					ry="4.5"
-					display="${
-						nonessentialLoads === 3 && (config.battery.hide_soc || config.wide)
-							? ''
-							: 'none'
-					}"
+					display="${nonessentialLoads === 3 &&
+					(config.battery.hide_soc || config.wide)
+						? ''
+						: 'none'}"
 					fill="none"
 					stroke="${data.dynamicColourNonEssentialLoad3}"
 					pointer-events="all"
@@ -132,11 +131,9 @@ export const renderGridElements = (
 					true,
 				)}
 				<g
-					display="${
-						!showNonessential || [0, 1, 2].includes(nonessentialLoads)
-							? 'none'
-							: ''
-					}"
+					display="${!showNonessential || [0, 1, 2].includes(nonessentialLoads)
+						? 'none'
+						: ''}"
 				>
 					${renderIcon(
 						undefined,
@@ -339,9 +336,7 @@ export const renderGridElements = (
 			<svg id="grid-flow">
 				${renderPath(
 					'grid-line',
-					[1, 2].includes(config.solar?.mppts)
-						? 'M 329 187 L 411 187 Q 421 187 421 197 L421 225'
-						: 'M 344 187 L 411 187 Q 421 187 421 197 L421 225',
+					[1, 2].includes(config.solar?.mppts) ? 'M 329 187 L 411 187 Q 421 187 421 197 L421 225' : 'M 344 187 L 411 187 Q 421 187 421 197 L421 225',
 					true,
 					gridColour,
 					data.gridLineWidth,
@@ -453,13 +448,7 @@ export const renderGridElements = (
 			<svg id="grid2-flow">
 				${renderPath(
 					'grid2-line',
-					[1, 2].includes(config.solar?.mppts)
-						? config.wide
-							? 'M143 187 259 187'
-							: 'M215 187 259 187'
-						: config.wide
-							? 'M143 187 274 187'
-							: 'M215 187 274 187',
+					[1, 2].includes(config.solar?.mppts) ? (config.wide ? 'M143 187 259 187' : 'M215 187 259 187') : (config.wide ? 'M143 187 274 187' : 'M215 187 274 187'),
 					true,
 					// Đồng bộ với 'inverter-path' (icon inverter -> ô Inverter,
 					// xem inverter-elements.ts) vì cả 2 cùng thể hiện 1 luồng
@@ -482,9 +471,9 @@ export const renderGridElements = (
 					// Path 'grid2-line' đầu = phía Inverter, cuối = phía Grid-tie.
 					// Công suất dương (Inverter đẩy ra) → đi từ đầu (0) đến cuối (1).
 					!data.gridConnected ||
-						data.isInverterStandby ||
-						autoScaledInverterPower < 0 ||
-						autoScaledInverterPower === 0
+					data.isInverterStandby ||
+					autoScaledInverterPower < 0 ||
+					autoScaledInverterPower === 0
 						? 'transparent'
 						: gridTieBusColour,
 					data.durationCur['grid2'],
@@ -495,7 +484,7 @@ export const renderGridElements = (
 					// Grid-tie W" (grid2-line) luôn dùng chiều mặc định, không phụ
 					// thuộc switch invert_flow.
 					false,
-					data.epsCycleColours,
+					data.inverterCycleColours,
 				)}
 				${renderCircle(
 					'grid-dot',
@@ -504,21 +493,20 @@ export const renderGridElements = (
 						8,
 					),
 					!data.gridConnected ||
-						data.isInverterStandby ||
-						autoScaledInverterPower > 0 ||
-						autoScaledInverterPower === 0
+					data.isInverterStandby ||
+					autoScaledInverterPower > 0 ||
+					autoScaledInverterPower === 0
 						? 'transparent'
 						: gridTieBusColour,
 					data.durationCur['grid2'],
 					'1;0',
 					'#grid2-line',
 					false,
-					data.epsCycleColours,
+					data.inverterCycleColours,
 				)}
 			</svg>
-			${
-				config.grid?.navigate
-					? svg`
+			${config.grid?.navigate
+				? svg`
                     <a href="#" @click=${(e) => Utils.handleNavigation(e, config.grid.navigate)}>
 							${guard(
 								[
@@ -533,7 +521,7 @@ export const renderGridElements = (
 								() => renderGridIcons(data, config),
 							)}
                     </a>`
-					: svg`
+				: svg`
                     <a href="#" @click=${(e) => Utils.handlePopup(e, config.entities.grid_connected_status_194)}>
 							${guard(
 								[
@@ -547,11 +535,9 @@ export const renderGridElements = (
 								],
 								() => renderGridIcons(data, config),
 							)}
-                    </a>`
-			}
-			${
-				config.grid?.navigate
-					? svg`
+                    </a>`}
+			${config.grid?.navigate
+				? svg`
                     <a href="#" @click=${(e) => Utils.handleNavigation(e, config.grid.navigate)}>
                         <g display="${config.show_grid && (config.grid.import_icon || config.grid.disconnected_icon || config.grid.export_icon) ? '' : 'none'}">
                             ${renderIcon(
@@ -566,7 +552,7 @@ export const renderGridElements = (
 														)}
                         </g>
                     </a>`
-					: svg`
+				: svg`
                     <a href="#" @click=${(e) => Utils.handlePopup(e, config.entities.grid_connected_status_194)}>
                         <g display="${config.show_grid && (config.grid.import_icon || config.grid.disconnected_icon || config.grid.export_icon) ? '' : 'none'}">
                             ${renderIcon(
@@ -580,8 +566,7 @@ export const renderGridElements = (
 															true,
 														)}
                         </g>
-                    </a>`
-			}
+                    </a>`}
 			<!-- Nonessential Icons-->
 			${guard(
 				[
@@ -604,11 +589,9 @@ export const renderGridElements = (
 			)}
 
 			<g
-				display="${
-					!showNonessential || [1, 2, 3].includes(nonessentialLoads)
-						? 'none'
-						: ''
-				}"
+				display="${!showNonessential || [1, 2, 3].includes(nonessentialLoads)
+					? 'none'
+					: ''}"
 			>
 				${renderIcon(
 					undefined,
@@ -621,9 +604,9 @@ export const renderGridElements = (
 				)}
 			</g>
 			<g
-				display="${
-					!showNonessential || [0, 1].includes(nonessentialLoads) ? 'none' : ''
-				}"
+				display="${!showNonessential || [0, 1].includes(nonessentialLoads)
+					? 'none'
+					: ''}"
 			>
 				${renderIcon(
 					undefined,
@@ -634,9 +617,9 @@ export const renderGridElements = (
 				)}
 			</g>
 			<g
-				display="${
-					!showNonessential || [0, 1].includes(nonessentialLoads) ? 'none' : ''
-				}"
+				display="${!showNonessential || [0, 1].includes(nonessentialLoads)
+					? 'none'
+					: ''}"
 			>
 				${renderIcon(
 					undefined,
@@ -647,11 +630,9 @@ export const renderGridElements = (
 				)}
 			</g>
 			<g
-				display="${
-					!showNonessential || [0, 2, 3].includes(nonessentialLoads)
-						? 'none'
-						: ''
-				}"
+				display="${!showNonessential || [0, 2, 3].includes(nonessentialLoads)
+					? 'none'
+					: ''}"
 			>
 				${renderIcon(
 					undefined,
@@ -702,10 +683,9 @@ export const renderGridElements = (
 				(e) => Utils.handlePopup(e, config.entities.max_sell_power),
 				true,
 			)}
-			${
-				three_phase
-					? config.entities?.grid_ct_power_total
-						? svg`
+			${three_phase
+				? config.entities?.grid_ct_power_total
+					? svg`
                         ${createTextWithPopup(
 													'grid_total_power',
 													420,
@@ -737,7 +717,7 @@ export const renderGridElements = (
 														),
 													true,
 												)}`
-						: svg`
+					: svg`
                         ${renderText(
 													'grid_total_power',
 													420,
@@ -764,7 +744,7 @@ export const renderGridElements = (
 															}`,
 													true,
 												)}`
-					: svg`
+				: svg`
                     ${createTextWithPopup(
 											'grid_total_power',
 											420,
@@ -792,40 +772,34 @@ export const renderGridElements = (
 											(e) =>
 												Utils.handlePopup(e, config.entities.grid_ct_power_172),
 											true,
-										)}`
-			}
-			${
-				config.entities?.grid_voltage
-					? renderText(
-							'grid_voltage_display',
-							420,
-							241,
-							false,
-							`${largeFont !== true ? 'st14' : 'st4'} st8`,
-							gridColour,
-							`${Utils.formatNumberLocale(data.gridVoltage ?? 0, 0)} ${UnitOfElectricPotential.VOLT}`,
-							true,
-						)
-					: ''
-			}
-			${
-				config.entities?.grid_frequency
-					? renderText(
-							'grid_frequency_display',
-							420,
-							260,
-							false,
-							`${largeFont !== true ? 'st14' : 'st4'} st8`,
-							gridColour,
-							`${Utils.formatNumberLocale(data.gridFrequency ?? 0, 1)} Hz`,
-							true,
-						)
-					: ''
-			}
-			${
-				config.entities?.nonessential_power &&
-				config.entities.nonessential_power !== 'none'
-					? svg`
+										)}`}
+			${config.entities?.grid_voltage
+				? renderText(
+						'grid_voltage_display',
+						420,
+						241,
+						false,
+						`${largeFont !== true ? 'st14' : 'st4'} st8`,
+						gridColour,
+						`${Utils.formatNumberLocale(data.gridVoltage ?? 0, 0)} ${UnitOfElectricPotential.VOLT}`,
+						true,
+					)
+				: ''}
+			${config.entities?.grid_frequency
+				? renderText(
+						'grid_frequency_display',
+						420,
+						260,
+						false,
+						`${largeFont !== true ? 'st14' : 'st4'} st8`,
+						gridColour,
+						`${Utils.formatNumberLocale(data.gridFrequency ?? 0, 1)} Hz`,
+						true,
+					)
+				: ''}
+			${config.entities?.nonessential_power &&
+			config.entities.nonessential_power !== 'none'
+				? svg`
                     ${createTextWithPopup(
 											'non_ess_power',
 											338,
@@ -843,7 +817,7 @@ export const renderGridElements = (
 												),
 											true,
 										)}`
-					: svg`
+				: svg`
                     ${renderText(
 											'non_ess_power',
 											338,
@@ -855,11 +829,9 @@ export const renderGridElements = (
 												? `${Utils.convertValue(data.nonessentialPower, decimalPlaces) || 0}`
 												: `${data.nonessentialPower || 0} ${UnitOfPower.WATT}`,
 											true,
-										)}`
-			}
-			${
-				totalGridPower >= 0
-					? svg`
+										)}`}
+			${totalGridPower >= 0
+				? svg`
                     <a href="#" @click=${(e) => Utils.handlePopup(e, config.entities.energy_cost_buy)}>
                         ${renderText(
 													'energy_cost',
@@ -901,7 +873,7 @@ export const renderGridElements = (
 													`${data.stateEnergyCostBuy?.getUOM()}`,
 												)}
                     </a>`
-					: svg`
+				: svg`
                     <a href="#" @click=${(e) => Utils.handlePopup(e, config.entities.energy_cost_sell)}>
                         ${renderText(
 													'energy_cost',
@@ -942,8 +914,7 @@ export const renderGridElements = (
 													gridColour,
 													`${data.stateEnergyCostSell?.getUOM()}`,
 												)}
-                    </a>`
-			}
+                    </a>`}
 			${createTextWithPopup(
 				'grid_power_169',
 				270,

@@ -1990,7 +1990,7 @@ export class SunSynkCardEditor
 			case 'three_phase': {
 				const on = Boolean(
 					cfg?.inverter &&
-					(cfg.inverter as Record<string, unknown>).three_phase,
+						(cfg.inverter as Record<string, unknown>).three_phase,
 				);
 				const v = on ? '3P' : '1P';
 				return `${base} (${v})`;

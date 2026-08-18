@@ -2719,6 +2719,13 @@ export class SunsynkPowerFlowCard extends LitElement {
 				customGridIconColour = Utils.toHexColor(gridColour);
 				break;
 		}
+		// Ép màu icon cột điện EVN thành grey khi công suất Lưới ~0 (không
+		// mua/bán), đồng bộ đúng chuẩn chung "grey theo flow" với khung
+		// W/V/Hz Grid thật cạnh nó -- GIỮ NGUYÊN hình dạng icon (import/
+		// export/disconnected) theo logic switch-case ở trên, chỉ đổi màu.
+		if (Math.abs(Utils.toNum(totalGridPower, 0)) < 1) {
+			customGridIconColour = 'grey';
+		}
 
 		let viewBoxYLite: string;
 		let viewBoxHeightLite: string;

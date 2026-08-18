@@ -92,6 +92,13 @@ export const renderGridElements = (
 			? 'grey'
 			: gridColour;
 
+	// Khung Grid thật (W/V/Hz cạnh EVN, đo bằng thiết bị ngoài) -- grey khi
+	// công suất Lưới (totalGridPower) ~0 (không mua/bán), đồng bộ đúng chuẩn
+	// chung "màu riêng nhóm + grey theo flow" như các nhánh PV/Pin/Inverter/
+	// EPS/Grid-tie đã có, chứ không phải luôn hiện gridColour cố định.
+	const gridRealBoxColour =
+		Math.abs(Utils.toNum(totalGridPower, 0)) < 1 ? 'grey' : gridColour;
+
 	const { three_phase } = config.inverter;
 
 	return html`
@@ -200,7 +207,7 @@ export const renderGridElements = (
 				rx="10.5"
 				ry="10.5"
 				fill="none"
-				stroke="${gridColour}"
+				stroke="${gridRealBoxColour}"
 				pointer-events="all"
 			/>
 			<rect
@@ -460,7 +467,7 @@ export const renderGridElements = (
 					// công thức màu để không lệch nhau khi trạng thái đổi. Luôn
 					// grey khi Standby (không phụ thuộc gridConnected) vì đây là
 					// phần Inverter tự đóng góp, không phải bus AC bypass qua Lưới.
-					gridTieBusColour,
+					data.isInverterStandby ? 'grey' : gridTieBusColour,
 					data.inverterLineWidth,
 				)}
 				${renderCircle(
@@ -694,7 +701,7 @@ export const renderGridElements = (
 													280,
 													config.entities.grid_ct_power_172 === 'none',
 													`${largeFont !== true ? 'st14' : 'st4'} st8`,
-													gridColour,
+													gridRealBoxColour,
 													auto_scale
 														? `${
 																config.grid.show_absolute
@@ -726,7 +733,7 @@ export const renderGridElements = (
 													280,
 													config.entities.grid_ct_power_172 === 'none',
 													`${largeFont !== true ? 'st14' : 'st4'} st8`,
-													gridColour,
+													gridRealBoxColour,
 													auto_scale
 														? `${
 																config.grid.show_absolute
@@ -753,7 +760,7 @@ export const renderGridElements = (
 											280,
 											config.entities.grid_ct_power_172 === 'none',
 											`${largeFont !== true ? 'st14' : 'st4'} st8`,
-											gridColour,
+											gridRealBoxColour,
 											auto_scale
 												? `${
 														config.grid.show_absolute
@@ -782,7 +789,7 @@ export const renderGridElements = (
 						241,
 						false,
 						`${largeFont !== true ? 'st14' : 'st4'} st8`,
-						gridColour,
+						gridRealBoxColour,
 						`${Utils.formatNumberLocale(data.gridVoltage ?? 0, 0)} ${UnitOfElectricPotential.VOLT}`,
 						true,
 					)
@@ -794,7 +801,7 @@ export const renderGridElements = (
 						260,
 						false,
 						`${largeFont !== true ? 'st14' : 'st4'} st8`,
-						gridColour,
+						gridRealBoxColour,
 						`${Utils.formatNumberLocale(data.gridFrequency ?? 0, 1)} Hz`,
 						true,
 					)

@@ -353,7 +353,12 @@ export const renderGridElements = (
 					'grid-line',
 					[1, 2].includes(config.solar?.mppts) ? 'M 329 187 L 411 187 Q 421 187 421 197 L421 225' : 'M 344 187 L 411 187 Q 421 187 421 197 L421 225',
 					true,
-					gridColour,
+					// Dùng gridRealBoxColour (đã ép grey đúng chuẩn khi
+					// |totalGridPower|<1) thay vì gridColour trực tiếp --
+					// gridColour tự dùng noGridColour (mặc định cyan, không
+					// phải grey) khi công suất gần 0, không khớp quy tắc
+					// thống nhất của card.
+					gridRealBoxColour,
 					data.gridLineWidth,
 				)}
 				${renderCircle(
@@ -387,7 +392,7 @@ export const renderGridElements = (
 					'grid-line1',
 					three_phase ? 'M 421 295 L 421 337' : 'M 421 295 L 421 310.5',
 					true,
-					gridColour,
+					gridRealBoxColour,
 					data.gridLineWidth,
 				)}
 				${renderCircle(

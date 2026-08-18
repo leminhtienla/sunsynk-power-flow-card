@@ -364,6 +364,7 @@ export const renderGridElements = (
 					'0;1',
 					'#grid-line',
 					invert_flow === true,
+					data.inverterCycleColours,
 				)}
 			</svg>
 			<svg id="grid1-flow">
@@ -397,6 +398,7 @@ export const renderGridElements = (
 					'0;1',
 					'#grid-line1',
 					invert_flow === true,
+					data.inverterCycleColours,
 				)}
 			</svg>
 			<svg id="ne1-flow">

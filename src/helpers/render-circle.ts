@@ -64,10 +64,19 @@ export const renderCircle = (
 
 	// Số chấm = độ dài thực tế / khoảng cách mong muốn, tối thiểu 1 (lần
 	// render đầu tiên khi chưa đo được độ dài, mặc định 1 chấm như cũ).
+	// Nếu có cycleColours (nhiều nguồn đang pha trộn), ĐẢM BẢO số chấm tối
+	// thiểu bằng đúng số nguồn đang tham gia -- nếu không, đường ngắn (VD
+	// es-line/es-line2 chỉ ~2-3 chấm) có thể không đủ chỗ hiện ĐỒNG THỜI cả
+	// 3 màu (PV/Pin/Lưới) cùng lúc, khiến animation "không phản ánh đủ" các
+	// nguồn đang tham gia dù cycleColours đã tính đúng.
 	const pathLen = getPathLength(mpathHref);
+	const minDotsForColours = cycleColours ? cycleColours.length : 1;
 	const dotCount = pathLen
-		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
-		: 1;
+		? Math.min(
+				MAX_DOTS,
+				Math.max(1, minDotsForColours, Math.round(pathLen / DOT_SPACING)),
+			)
+		: Math.max(1, minDotsForColours);
 
 	// Làm tròn dur về 2 chữ số thập phân để làm "key" — chỉ ép tạo lại phần
 	// tử khi dur đổi ĐÁNG KỂ (>0.005s), tránh tạo lại liên tục vì sai số

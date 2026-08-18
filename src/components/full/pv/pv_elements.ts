@@ -43,6 +43,12 @@ export const renderSolarElements = (
 			: 'grey';
 	const solarDailyLabelColour = solarDailyColour;
 
+	// Icon mặt trời (4 biến thể display_mode): grey khi TỔNG CÔNG SUẤT PV
+	// TỨC THỜI (totalPV) = 0 -- khác với solarDailyColour (theo kWh cả
+	// ngày). Icon này đại diện cho hoạt động PV NGAY LÚC NÀY (giống icon
+	// thời tiết), nên phải theo công suất tức thời, không phải kWh tích lũy.
+	const solarLiveColour = totalPV === 0 ? 'grey' : solarBaseColour;
+
 	// Text công suất (W) từng nhánh PV: grey RIÊNG khi chính nhánh đó = 0W
 	// (không dùng chung solarColour theo TỔNG PV -- nếu không, nhánh PV1=0W
 	// vẫn hiện màu miễn tổng PV còn >0 do nhánh khác, sai chuẩn "grey theo
@@ -302,27 +308,27 @@ export const renderSolarElements = (
                     <a href="#" @click=${(e) => Utils.handleNavigation(e, config.solar.navigate)}>
                         <svg xmlns="http://www.w3.org/2000/svg" id="sun" x="80.21" y="-0.5" width="40" height="40"
                             viewBox="0 0 24 24">
-                            <path fill="${solarDailyColour}"
+                            <path fill="${solarLiveColour}"
                                 d="${icons.sun}"/>
                         </svg>
                     </a>
                     <svg xmlns="http://www.w3.org/2000/svg" id="sun-mirror" x="52.78" y="-0.5" width="40" height="40"
                         viewBox="0 0 24 24">
                         <g transform="scale(-1,1) translate(-24,0)">
-                            <path fill="${solarDailyColour}"
+                            <path fill="${solarLiveColour}"
                                 d="${icons.sunRayOnly}"/>
                         </g>
                     </svg>`
 				: svg`
                     <svg xmlns="http://www.w3.org/2000/svg" id="sun" x="80.21" y="-0.5" width="40" height="40"
                         viewBox="0 0 24 24">
-                        <path fill="${solarDailyColour}"
+                        <path fill="${solarLiveColour}"
                             d="${icons.sun}"/>
                     </svg>
                     <svg xmlns="http://www.w3.org/2000/svg" id="sun-mirror" x="52.78" y="-0.5" width="40" height="40"
                         viewBox="0 0 24 24">
                         <g transform="scale(-1,1) translate(-24,0)">
-                            <path fill="${solarDailyColour}"
+                            <path fill="${solarLiveColour}"
                                 d="${icons.sunRayOnly}"/>
                         </g>
                     </svg>`}
@@ -627,7 +633,7 @@ export const renderSolarElements = (
 				32,
 				!data.stateEnvironmentTemp.isValid(),
 				config.entities?.environment_temp ? 'st3 left-align' : 'st12',
-				solarBaseColour,
+				solarLiveColour,
 				`${data.stateEnvironmentTemp.toNum(1)}°`,
 				(e) => Utils.handlePopup(e, config.entities.environment_temp),
 				true,

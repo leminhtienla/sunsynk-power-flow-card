@@ -2356,10 +2356,23 @@ export class SunsynkPowerFlowCard extends LitElement {
 		// nguồn đóng góp (VD PV=100%) -> mảng có 1 phần tử -> mọi DOT cùng 1
 		// màu. Nếu nhiều nguồn pha trộn -> DOT liên tiếp đổi màu lần lượt
 		// theo thứ tự PV, Pin, Lưới (xem renderCircle cycleColours).
-		const homeLoadCycleColours: string[] = [];
-		if (pvPercentage > 0) homeLoadCycleColours.push(solarColour);
-		if (batteryPercentage > 0) homeLoadCycleColours.push(batteryColour);
-		if (gridPercentage > 0) homeLoadCycleColours.push(gridColour);
+		// Khi Inverter Standby: Inverter KHÔNG vận hành nên PV/Pin (dù panel
+		// vẫn đang đọc số >0 tức thời) KHÔNG thể thực sự cấp cho tải -- tải
+		// lúc này 100% đi qua đường bypass của Lưới (nếu còn Lưới) -> ép
+		// cứng chỉ còn gridColour, bỏ qua pvPercentage/batteryPercentage dù
+		// tính ra bao nhiêu (số đọc thô, không phản ánh đúng thực tế khi
+		// Inverter đứng yên).
+		const homeLoadCycleColours: string[] = isInverterStandby
+			? gridConnected
+				? [gridColour]
+				: []
+			: (() => {
+					const arr: string[] = [];
+					if (pvPercentage > 0) arr.push(solarColour);
+					if (batteryPercentage > 0) arr.push(batteryColour);
+					if (gridPercentage > 0) arr.push(gridColour);
+					return arr;
+				})();
 
 		// Mảng màu DOT cho EPS/Inverter (chỉ 2 nguồn: PV -> Pin, không có
 		// Lưới vì EPS cách ly hoàn toàn khỏi Lưới).

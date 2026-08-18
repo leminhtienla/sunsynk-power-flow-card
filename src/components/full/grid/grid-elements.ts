@@ -27,7 +27,13 @@ const renderGridIcons = (data: DataDto, config: sunsynkPowerFlowCardConfig) => {
 		data.gridStatus.toLowerCase(),
 	);
 	const totalGridPower = data.totalGridPower;
-	const gridColour = data.gridColour;
+	// gridColour tự dùng noGridColour (mặc định cyan #00ffff, KHÔNG PHẢI
+	// grey) khi công suất Lưới gần 0 -- đây là khái niệm riêng của base
+	// project, không khớp quy tắc "grey theo flow" thống nhất của card này.
+	// Ép grey rõ ràng ở đây để icon cột điện luôn nhất quán với khung/text
+	// Grid thật (gridRealBoxColour) và icon EVN thứ 2 (customGridIconColour).
+	const gridColour =
+		Math.abs(Utils.toNum(totalGridPower, 0)) < 1 ? 'grey' : data.gridColour;
 	const three_phase = config.inverter.three_phase;
 
 	return svg`
@@ -520,6 +526,7 @@ export const renderGridElements = (
 							${guard(
 								[
 									data.gridStatus,
+									Math.abs(data.totalGridPower) < 1,
 									data.totalGridPower >= 0,
 									data.gridColour,
 									three_phase,
@@ -535,6 +542,7 @@ export const renderGridElements = (
 							${guard(
 								[
 									data.gridStatus,
+									Math.abs(data.totalGridPower) < 1,
 									data.totalGridPower >= 0,
 									data.gridColour,
 									three_phase,

@@ -47,9 +47,13 @@ export const renderInverterElements = (
 	const { epsFlowColour } = data;
 
 	// Khung Inverter (W/A): inverterColour riêng, grey riêng khi công suất
-	// Inverter hiện tại (displayInverterPower) = 0.
+	// Inverter hiện tại (displayInverterPower) = 0. Dùng ngưỡng nhỏ (<1W)
+	// thay vì so sánh chặt !==0 -- sensor có thể trả về sai số thập phân
+	// cực nhỏ thay vì đúng số 0 tuyệt đối.
 	const inverterFlowColour =
-		data.displayInverterPower !== 0 ? inverterColour : 'grey';
+		Math.abs(Utils.toNum(data.displayInverterPower, 0)) >= 1
+			? inverterColour
+			: 'grey';
 
 	// Status text (inverter_status_text): biên phải x=401 (rút thêm 15px so
 	// với x=416 trước đây), tối đa ~42 ký tự/dòng (đo THẬT bằng fonttools

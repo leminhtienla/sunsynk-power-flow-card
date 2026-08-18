@@ -2581,7 +2581,8 @@ export class SunsynkPowerFlowCard extends LitElement {
 		// EPS (giống "Daily EPS" kWh), grey khi công suất của chính nó
 		// (auxPower) = 0. Màu pha trộn động (epsSourceColour) giờ CHỈ dùng
 		// cho DOT animation (xem renderEpsDotColours/tương tự ở component).
-		const epsFlowColour = auxPower !== 0 ? auxBaseColour : 'grey';
+		const epsFlowColour =
+			Math.abs(Utils.toNum(auxPower, 0)) >= 1 ? auxBaseColour : 'grey';
 
 		//console.log(`${pvPercentageBat} % PV to charge battery, ${gridPercentageBat} % Grid to charge battery`);
 

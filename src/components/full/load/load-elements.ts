@@ -63,7 +63,10 @@ export const renderLoadElements = (
 	// kWh, không còn pha trộn động theo PV/Pin/Lưới nữa -- màu pha trộn giờ
 	// chỉ áp dụng cho DOT animation). Grey khi công suất của chính nó
 	// (displayEssentialPower) = 0.
-	const homeLoadColour = data.displayEssentialPower === 0 ? 'grey' : loadColour;
+	const homeLoadColour =
+		Math.abs(Utils.toNum(data.displayEssentialPower, 0)) < 1
+			? 'grey'
+			: loadColour;
 
 	return html`
 		<!-- Load Elements -->
@@ -556,7 +559,7 @@ export const renderLoadElements = (
 						display="${[1, 2].includes(additionalLoad) && !showAux
 							? ''
 							: 'none'}"
-						fill="${data.displayEssentialPower === 0 ? 'grey' : `url(#Lg-essen_aux)`}"
+						fill="${Math.abs(data.displayEssentialPower) < 1 ? 'grey' : `url(#Lg-essen_aux)`}"
 						d="${data.essIcon}"
 					/>
 				</svg>
@@ -616,7 +619,7 @@ export const renderLoadElements = (
 						display="${[1, 2].includes(additionalLoad) && showAux
 							? ''
 							: 'none'}"
-						fill="${data.displayEssentialPower === 0 ? 'grey' : `url(#Lg-essen_noaux)`}"
+						fill="${Math.abs(data.displayEssentialPower) < 1 ? 'grey' : `url(#Lg-essen_noaux)`}"
 						d="${data.essIcon}"
 					/>
 				</svg>
@@ -676,7 +679,7 @@ export const renderLoadElements = (
 						display="${[4, 5, 6].includes(additionalLoad) && !showAux
 							? ''
 							: 'none'}"
-						fill="${data.displayEssentialPower === 0 ? 'grey' : `url(#Lg-essen_noaux_four)`}"
+						fill="${Math.abs(data.displayEssentialPower) < 1 ? 'grey' : `url(#Lg-essen_noaux_four)`}"
 						d="${data.essIcon}"
 					/>
 				</svg>
@@ -736,7 +739,7 @@ export const renderLoadElements = (
 						display="${[1, 2, 3, 4, 5, 6].includes(additionalLoad)
 							? 'none'
 							: ''}"
-						fill="${data.displayEssentialPower === 0 ? 'grey' : `url(#Lg-essen_default)`}"
+						fill="${Math.abs(data.displayEssentialPower) < 1 ? 'grey' : `url(#Lg-essen_default)`}"
 						d="${data.essIcon}"
 					/>
 				</svg>

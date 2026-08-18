@@ -43,21 +43,29 @@ export const renderSolarElements = (
 			: 'grey';
 	const solarDailyLabelColour = solarDailyColour;
 
+	// Ngưỡng nhỏ (<1W) thay vì so sánh chặt ===0 -- một số sensor trả về sai
+	// số thập phân cực nhỏ (VD 0.001W) thay vì đúng số 0 tuyệt đối, khiến so
+	// sánh chặt bị trượt và không grey dù thực tế = 0. Đồng thời grey khi
+	// Inverter đang Standby (đồng bộ với path pv1-4-line/solar-line/khung
+	// render-pv.ts, vốn đã grey theo cả 2 điều kiện này).
+	const isOff = (w: number) =>
+		Math.abs(Utils.toNum(w, 0)) < 1 || data.isInverterStandby;
+
 	// Icon mặt trời (4 biến thể display_mode): grey khi TỔNG CÔNG SUẤT PV
 	// TỨC THỜI (totalPV) = 0 -- khác với solarDailyColour (theo kWh cả
 	// ngày). Icon này đại diện cho hoạt động PV NGAY LÚC NÀY (giống icon
 	// thời tiết), nên phải theo công suất tức thời, không phải kWh tích lũy.
-	const solarLiveColour = totalPV === 0 ? 'grey' : solarBaseColour;
+	const solarLiveColour = isOff(totalPV) ? 'grey' : solarBaseColour;
 
 	// Text công suất (W) từng nhánh PV: grey RIÊNG khi chính nhánh đó = 0W
 	// (không dùng chung solarColour theo TỔNG PV -- nếu không, nhánh PV1=0W
 	// vẫn hiện màu miễn tổng PV còn >0 do nhánh khác, sai chuẩn "grey theo
 	// flow" của chính nó).
-	const pvTotalTextColour = totalPV === 0 ? 'grey' : solarBaseColour;
-	const pv1TextColour = data.pv1PowerWatts === 0 ? 'grey' : solarBaseColour;
-	const pv2TextColour = data.pv3PowerWatts === 0 ? 'grey' : solarBaseColour;
-	const pv3TextColour = data.pv2PowerWatts === 0 ? 'grey' : solarBaseColour;
-	const pv4TextColour = data.pv4PowerWatts === 0 ? 'grey' : solarBaseColour;
+	const pvTotalTextColour = isOff(totalPV) ? 'grey' : solarBaseColour;
+	const pv1TextColour = isOff(data.pv1PowerWatts) ? 'grey' : solarBaseColour;
+	const pv2TextColour = isOff(data.pv3PowerWatts) ? 'grey' : solarBaseColour;
+	const pv3TextColour = isOff(data.pv2PowerWatts) ? 'grey' : solarBaseColour;
+	const pv4TextColour = isOff(data.pv4PowerWatts) ? 'grey' : solarBaseColour;
 
 	return html`
 		<!-- Solar Elements -->
@@ -205,7 +213,7 @@ export const renderSolarElements = (
 				// Khi Inverter Standby HOẶC chính nhánh PV1 này = 0W -> grey
 				// (trước đây chỉ check Standby, khiến đường vẫn hiện màu dù
 				// nhánh này không có công suất).
-				data.isInverterStandby || data.pv1PowerWatts === 0
+				data.isInverterStandby || isOff(data.pv1PowerWatts)
 					? 'grey'
 					: solarBaseColour,
 				data.pv1LineWidth,
@@ -213,7 +221,7 @@ export const renderSolarElements = (
 			${renderCircle(
 				'pv1-dot',
 				Math.min(2 + data.pv1LineWidth + Math.max(minLineWidth - 2, 0), 8),
-				data.isInverterStandby || !(data.pv1PowerWatts > 0)
+				data.isInverterStandby || isOff(data.pv1PowerWatts)
 					? 'transparent'
 					: solarBaseColour,
 				durationCur['pv1'],
@@ -225,7 +233,7 @@ export const renderSolarElements = (
 				'pv2-line',
 				'M 86 172 L 86 66 Q 86 56 96 56 L 101 56',
 				![1, 2].includes(mppts),
-				data.isInverterStandby || data.pv3PowerWatts === 0
+				data.isInverterStandby || isOff(data.pv3PowerWatts)
 					? 'grey'
 					: solarBaseColour,
 				data.pv3LineWidth,
@@ -233,7 +241,7 @@ export const renderSolarElements = (
 			${renderCircle(
 				'pv2-dot',
 				Math.min(2 + data.pv3LineWidth + Math.max(minLineWidth - 2, 0), 8),
-				data.isInverterStandby || !(data.pv3PowerWatts > 0)
+				data.isInverterStandby || isOff(data.pv3PowerWatts)
 					? 'transparent'
 					: solarBaseColour,
 				durationCur['pv2'],
@@ -245,7 +253,7 @@ export const renderSolarElements = (
 				'pv3-line',
 				'M 86 172 L 86 125 Q 86 115 76 115 L 70 115',
 				mppts !== 1,
-				data.isInverterStandby || data.pv2PowerWatts === 0
+				data.isInverterStandby || isOff(data.pv2PowerWatts)
 					? 'grey'
 					: solarBaseColour,
 				data.pv2LineWidth,
@@ -253,7 +261,7 @@ export const renderSolarElements = (
 			${renderCircle(
 				'pv3-dot',
 				Math.min(2 + data.pv2LineWidth + Math.max(minLineWidth - 2, 0), 8),
-				data.isInverterStandby || !(data.pv2PowerWatts > 0)
+				data.isInverterStandby || isOff(data.pv2PowerWatts)
 					? 'transparent'
 					: solarBaseColour,
 				durationCur['pv3'],
@@ -265,7 +273,7 @@ export const renderSolarElements = (
 				'pv4-line',
 				'M 86 172 L 86 125 Q 86 115 96 115 L 101 115',
 				![1, 2, 3].includes(mppts),
-				data.isInverterStandby || data.pv4PowerWatts === 0
+				data.isInverterStandby || isOff(data.pv4PowerWatts)
 					? 'grey'
 					: solarBaseColour,
 				data.pv4LineWidth,
@@ -273,7 +281,7 @@ export const renderSolarElements = (
 			${renderCircle(
 				'pv4-dot',
 				Math.min(2 + data.pv4LineWidth + Math.max(minLineWidth - 2, 0), 8),
-				data.isInverterStandby || !(data.pv4PowerWatts > 0)
+				data.isInverterStandby || isOff(data.pv4PowerWatts)
 					? 'transparent'
 					: solarBaseColour,
 				durationCur['pv4'],
@@ -289,13 +297,13 @@ export const renderSolarElements = (
 				mppts !== 1,
 				// Đường PV -> Inverter: khi Inverter Standby HOẶC tổng PV = 0W
 				// -> grey, tắt animation.
-				data.isInverterStandby || totalPV === 0 ? 'grey' : solarBaseColour,
+				data.isInverterStandby || isOff(totalPV) ? 'grey' : solarBaseColour,
 				data.solarLineWidth,
 			)}
 			${renderCircle(
 				'solar-dot',
 				Math.min(2 + data.solarLineWidth + Math.max(minLineWidth - 2, 0), 8),
-				data.isInverterStandby || !(totalPV > 0)
+				data.isInverterStandby || isOff(totalPV)
 					? 'transparent'
 					: solarBaseColour,
 				durationCur['solar'],

@@ -62,14 +62,18 @@ export function renderPV(
 		Math.min(100, Number.isFinite(parsed) ? (parsed as number) : 0),
 	);
 	const solarBaseColour = data.solarBaseColour;
+	// Grey RÕ RÀNG khi nhánh PV này = 0W HOẶC Inverter đang Standby (đồng bộ
+	// với các đường path pv1-4-line/solar-line, vốn đã grey theo cả 2 điều
+	// kiện này) -- không phụ thuộc off_threshold gián tiếp qua solarColour
+	// nữa. Dùng solarBaseColour (tĩnh) khi có công suất, đồng bộ đúng chuẩn
+	// chung "màu riêng nhóm + grey theo flow".
+	// Dùng ngưỡng nhỏ (<1W) thay vì so sánh chặt ===0 -- một số sensor trả
+	// về sai số thập phân cực nhỏ (VD 0.001W) thay vì đúng số 0 tuyệt đối,
+	// khiến so sánh chặt bị trượt và khung không grey dù thực tế = 0.
+	const isBranchOff = Math.abs(branchPower) < 1 || data.isInverterStandby;
 	const useGradient =
-		[1, 3].includes(config.solar.efficiency) &&
-		efficiency > 0 &&
-		branchPower !== 0;
-	// Grey RÕ RÀNG khi nhánh PV này = 0W (không phụ thuộc off_threshold gián
-	// tiếp qua solarColour nữa). Dùng solarBaseColour (tĩnh) khi có công
-	// suất, đồng bộ đúng chuẩn chung "màu riêng nhóm + grey theo flow".
-	const strokeColor = branchPower === 0 ? 'grey' : solarBaseColour;
+		[1, 3].includes(config.solar.efficiency) && efficiency > 0 && !isBranchOff;
+	const strokeColor = isBranchOff ? 'grey' : solarBaseColour;
 	const gradientUrl = useGradient ? `url(#${gradientId})` : strokeColor;
 	let className = '';
 

@@ -83,10 +83,12 @@ export const renderGridElements = (
 	// Màu riêng cho khung Grid-tie (V/Hz) -- LUÔN dùng gridColour riêng
 	// (giống khung Grid W/V/H thật cạnh EVN), không còn pha trộn động theo
 	// PV/Pin nữa. Grey khi mất Lưới (V/Hz Grid-tie =0) hoặc (không Standby
-	// và) không có công suất Inverter đẩy ra.
+	// và) không có công suất Inverter đẩy ra. Dùng ngưỡng nhỏ (<1W) thay vì
+	// so sánh chặt ===0 -- sensor có thể trả về sai số thập phân cực nhỏ.
 	const gridTieBusColour =
 		!data.gridConnected ||
-		(!data.isInverterStandby && data.displayInverterPower === 0)
+		(!data.isInverterStandby &&
+			Math.abs(Utils.toNum(data.displayInverterPower, 0)) < 1)
 			? 'grey'
 			: gridColour;
 
@@ -474,8 +476,7 @@ export const renderGridElements = (
 					// Công suất dương (Inverter đẩy ra) → đi từ đầu (0) đến cuối (1).
 					!data.gridConnected ||
 					data.isInverterStandby ||
-					autoScaledInverterPower < 0 ||
-					autoScaledInverterPower === 0
+					autoScaledInverterPower < 1
 						? 'transparent'
 						: gridTieBusColour,
 					data.durationCur['grid2'],
@@ -496,8 +497,7 @@ export const renderGridElements = (
 					),
 					!data.gridConnected ||
 					data.isInverterStandby ||
-					autoScaledInverterPower > 0 ||
-					autoScaledInverterPower === 0
+					autoScaledInverterPower > -1
 						? 'transparent'
 						: gridTieBusColour,
 					data.durationCur['grid2'],

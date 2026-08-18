@@ -39,9 +39,15 @@ export const renderBatteryElements = (
 	// ĐƠN GIẢN HÓA (sửa lớn): khung/icon Pin LUÔN dùng batteryColour riêng
 	// (đã tự có charge/discharge sub-variant), không còn pha trộn theo % PV/
 	// Lưới sạc pin nữa -- màu pha trộn giờ CHỈ dùng cho DOT animation. Grey
-	// khi Pin không có công suất (đứng yên, không sạc/xả).
+	// khi Pin không có công suất (đứng yên, không sạc/xả) HOẶC Inverter đang
+	// Standby (đồng bộ với 'bat-line' path, vốn đã grey theo Standby từ
+	// trước). Dùng ngưỡng nhỏ (<1W) thay vì so sánh chặt ===0 -- sensor có
+	// thể trả về sai số thập phân cực nhỏ thay vì đúng số 0 tuyệt đối.
 	const batteryFlowColour =
-		data.batteryPowerTotal === 0 ? 'grey' : batteryColour;
+		Math.abs(Utils.toNum(data.batteryPowerTotal, 0)) < 1 ||
+		data.isInverterStandby
+			? 'grey'
+			: batteryColour;
 
 	return html`
 		<!-- Battery Elements -->

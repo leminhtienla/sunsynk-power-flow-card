@@ -307,7 +307,7 @@ export const renderGridElements = (
 				377,
 				true,
 				'st3 st8',
-				gridColour,
+				data.customGridIconColour,
 				config.grid.grid_name || localize('common.grid_name'),
 			)}
 			${renderText(
@@ -373,7 +373,6 @@ export const renderGridElements = (
 					'#grid-line',
 					invert_flow === true,
 				undefined,
-				['#grid-line1'],
 				)}
 				${renderCircle(
 					'grid-dot',
@@ -387,7 +386,6 @@ export const renderGridElements = (
 					'#grid-line',
 					invert_flow === true,
 					data.inverterCycleColours,
-				['#grid-line1'],
 				)}
 			</svg>
 			<svg id="grid1-flow">
@@ -410,7 +408,6 @@ export const renderGridElements = (
 					'#grid-line1',
 					invert_flow === true,
 				undefined,
-				['#grid-line'],
 				)}
 				${renderCircle(
 					'grid-dot',
@@ -424,7 +421,6 @@ export const renderGridElements = (
 					'#grid-line1',
 					invert_flow === true,
 					data.inverterCycleColours,
-				['#grid-line'],
 				)}
 			</svg>
 			<svg id="ne1-flow">

@@ -45,6 +45,7 @@ export const renderCircle = (
 	mpathHref: string,
 	invertFlow: boolean = false,
 	cycleColours?: string[],
+	groupMpathHrefs?: string[],
 ) => {
 	// If fill is transparent, skip rendering the animated dot entirely to avoid
 	// running animations and triggering paints when power is zero or the flow is hidden.
@@ -64,7 +65,17 @@ export const renderCircle = (
 
 	// Số chấm = độ dài thực tế / khoảng cách mong muốn, tối thiểu 1 (lần
 	// render đầu tiên khi chưa đo được độ dài, mặc định 1 chấm như cũ).
-	const pathLen = getPathLength(mpathHref);
+	// Nếu có groupMpathHrefs (nhiều đường LIÊN TIẾP cùng biểu diễn 1 dòng
+	// công suất, VD es-line + es-line2 cùng là "Home Load"), dùng ĐỘ DÀI
+	// LỚN NHẤT trong nhóm để tính dotCount CHUNG cho cả nhóm -- tránh tình
+	// trạng 2 đoạn nối liền nhau nhưng số chấm khác nhau (nhìn không đồng
+	// bộ dù cùng biểu diễn 1 luồng công suất duy nhất).
+	const pathLen = groupMpathHrefs
+		? Math.max(
+				getPathLength(mpathHref) || 0,
+				...groupMpathHrefs.map((h) => getPathLength(h) || 0),
+			) || undefined
+		: getPathLength(mpathHref);
 	const dotCount = pathLen
 		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
 		: 1;

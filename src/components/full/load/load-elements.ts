@@ -437,6 +437,7 @@ export const renderLoadElements = (
 					'#es-line2',
 					config.load.invert_flow === true,
 					data.homeLoadCycleColours,
+					['#es-line'],
 				)}
 				${renderCircle(
 					'es-dot',
@@ -453,6 +454,7 @@ export const renderLoadElements = (
 					'#es-line2',
 					config.load.invert_flow === true,
 					data.homeLoadCycleColours,
+					['#es-line'],
 				)}
 			</svg>
 			<svg id="load1-flow">
@@ -482,6 +484,7 @@ export const renderLoadElements = (
 					'#es-line',
 					config.load.invert_flow === true,
 					data.homeLoadCycleColours,
+					['#es-line2'],
 				)}
 				${renderCircle(
 					'es-dot',
@@ -498,6 +501,7 @@ export const renderLoadElements = (
 					'#es-line',
 					config.load.invert_flow === true,
 					data.homeLoadCycleColours,
+					['#es-line2'],
 				)}
 			</svg>
 			<!-- Essential Icon -->

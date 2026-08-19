@@ -372,6 +372,8 @@ export const renderGridElements = (
 					'1;0',
 					'#grid-line',
 					invert_flow === true,
+				undefined,
+				['#grid-line1'],
 				)}
 				${renderCircle(
 					'grid-dot',
@@ -385,6 +387,7 @@ export const renderGridElements = (
 					'#grid-line',
 					invert_flow === true,
 					data.inverterCycleColours,
+				['#grid-line1'],
 				)}
 			</svg>
 			<svg id="grid1-flow">
@@ -406,6 +409,8 @@ export const renderGridElements = (
 					'1;0',
 					'#grid-line1',
 					invert_flow === true,
+				undefined,
+				['#grid-line'],
 				)}
 				${renderCircle(
 					'grid-dot',
@@ -419,6 +424,7 @@ export const renderGridElements = (
 					'#grid-line1',
 					invert_flow === true,
 					data.inverterCycleColours,
+				['#grid-line'],
 				)}
 			</svg>
 			<svg id="ne1-flow">

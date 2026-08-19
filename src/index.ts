@@ -2351,11 +2351,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 				? Utils.toNum((batteryPercentageRawEps / totalPercentageEps) * 100, 0)
 				: 0;
 
-		// Mảng màu DOT cho Home Load (thứ tự cố định PV -> Pin -> Lưới): chỉ
-		// đưa vào mảng những nguồn ĐANG thực sự đóng góp (%>0). Nếu chỉ 1
-		// nguồn đóng góp (VD PV=100%) -> mảng có 1 phần tử -> mọi DOT cùng 1
-		// màu. Nếu nhiều nguồn pha trộn -> DOT liên tiếp đổi màu lần lượt
-		// theo thứ tự PV, Pin, Lưới (xem renderCircle cycleColours).
+		// Mảng màu DOT cho Home Load (thứ tự cố định PV -> Pin -> Lưới): phân
+		// bổ theo KHỐI liên tiếp đúng tỷ lệ %, 5 phần = 100% (xem
+		// Utils.buildCycleColours). Nếu chỉ 1 nguồn đóng góp -> mọi DOT cùng
+		// 1 màu.
 		// Khi Inverter Standby: Inverter KHÔNG vận hành nên PV/Pin (dù panel
 		// vẫn đang đọc số >0 tức thời) KHÔNG thể thực sự cấp cho tải -- tải
 		// lúc này 100% đi qua đường bypass của Lưới (nếu còn Lưới) -> ép
@@ -2366,19 +2365,19 @@ export class SunsynkPowerFlowCard extends LitElement {
 			? gridConnected
 				? [gridColour]
 				: []
-			: (() => {
-					const arr: string[] = [];
-					if (pvPercentage > 0) arr.push(solarColour);
-					if (batteryPercentage > 0) arr.push(batteryColour);
-					if (gridPercentage > 0) arr.push(gridColour);
-					return arr;
-				})();
+			: Utils.buildCycleColours([
+					{ percentage: pvPercentage, colour: solarColour },
+					{ percentage: batteryPercentage, colour: batteryColour },
+					{ percentage: gridPercentage, colour: gridColour },
+				]);
 
 		// Mảng màu DOT cho EPS/Inverter (chỉ 2 nguồn: PV -> Pin, không có
-		// Lưới vì EPS cách ly hoàn toàn khỏi Lưới).
-		const epsCycleColours: string[] = [];
-		if (pvPercentageEps > 0) epsCycleColours.push(solarColour);
-		if (batteryPercentageEps > 0) epsCycleColours.push(batteryColour);
+		// Lưới vì EPS cách ly hoàn toàn khỏi Lưới). Cũng phân bổ theo khối
+		// tỷ lệ 5 phần = 100%.
+		const epsCycleColours: string[] = Utils.buildCycleColours([
+			{ percentage: pvPercentageEps, colour: solarColour },
+			{ percentage: batteryPercentageEps, colour: batteryColour },
+		]);
 
 		// Mảng màu DOT cho 'inverter-path' và 'grid2-line' (icon Inverter <->
 		// khung Inverter <-> Grid-tie): phản ánh đúng thành phần PV/Pin của
@@ -2409,10 +2408,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 								0,
 							)
 						: 0;
-		const inverterCycleColours: string[] = [];
-		if (pvPercentageRawInv > 0) inverterCycleColours.push(solarColour);
-		if (batteryPercentageRawInv > 0)
-			inverterCycleColours.push(batteryColour);
+		const inverterCycleColours: string[] = Utils.buildCycleColours([
+			{ percentage: pvPercentageRawInv, colour: solarColour },
+			{ percentage: batteryPercentageRawInv, colour: batteryColour },
+		]);
 
 		// Icon EPS LOAD biến thể theo nguồn chiếm ưu thế (giống essPv/essBat
 		// của Home Load nhưng chỉ 2 lựa chọn, không có essGrid).
@@ -2530,9 +2529,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 		// trên bat-line -- dot "power-dot-discharge" giữ nguyên batteryColour
 		// đơn (Pin tự xả ra, không phải bên ngoài cấp vào nên không cần
 		// cycle).
-		const batteryChargeCycleColours: string[] = [];
-		if (pvPercentageBat > 0) batteryChargeCycleColours.push(solarColour);
-		if (gridPercentageBat > 0) batteryChargeCycleColours.push(gridColour);
+		const batteryChargeCycleColours: string[] = Utils.buildCycleColours([
+			{ percentage: pvPercentageBat, colour: solarColour },
+			{ percentage: gridPercentageBat, colour: gridColour },
+		]);
 
 		let flowColour: string;
 		switch (true) {

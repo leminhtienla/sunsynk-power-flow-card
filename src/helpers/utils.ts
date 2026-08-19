@@ -243,4 +243,53 @@ export class Utils {
 			console.warn('Navigation path is not provided.');
 		}
 	}
+
+	/**
+	 * Xây mảng màu DOT cho renderCircle's cycleColours, phân bổ theo KHỐI
+	 * LIÊN TIẾP đúng tỷ lệ % từng nguồn -- KHÔNG xen kẽ round-robin (1 dot/
+	 * nguồn) như trước. Tổng cố định 5 "phần" = 100% (mỗi phần = 20%).
+	 * VD: PV 40% + Pin 60% -> [PV,PV,Pin,Pin,Pin] (2 dot PV liên tiếp rồi 3
+	 * dot Pin liên tiếp) thay vì [PV,Pin,PV,Pin,Pin] (xen kẽ).
+	 * VD 3 nguồn 20/40/40% -> [PV,Pin,Pin,Lưới,Lưới] (1/2/2).
+	 * Nguồn có %>0 nhưng làm tròn ra 0 phần vẫn được đảm bảo tối thiểu 1
+	 * phần (để không "biến mất" khỏi animation dù đóng góp rất nhỏ).
+	 */
+	static buildCycleColours(
+		sources: { percentage: number; colour: string }[],
+	): string[] {
+		const TOTAL_SLOTS = 5;
+		const active = sources.filter((s) => s.percentage > 0);
+		if (active.length === 0) return [];
+		if (active.length === 1) return [active[0].colour];
+
+		let counts = active.map((s) =>
+			Math.round((s.percentage / 100) * TOTAL_SLOTS),
+		);
+		// Đảm bảo mỗi nguồn đang hoạt động có tối thiểu 1 phần.
+		counts = counts.map((c) => Math.max(1, c));
+
+		// Điều chỉnh cho tổng đúng bằng TOTAL_SLOTS (làm tròn có thể lệch).
+		let diff = TOTAL_SLOTS - counts.reduce((a, b) => a + b, 0);
+		while (diff !== 0) {
+			if (diff > 0) {
+				const maxIdx = counts.indexOf(Math.max(...counts));
+				counts[maxIdx]++;
+				diff--;
+			} else {
+				const reducible = counts
+					.map((c, i) => ({ c, i }))
+					.filter((x) => x.c > 1);
+				if (reducible.length === 0) break;
+				const target = reducible.reduce((a, b) => (a.c >= b.c ? a : b));
+				counts[target.i]--;
+				diff++;
+			}
+		}
+
+		const result: string[] = [];
+		active.forEach((s, i) => {
+			for (let j = 0; j < counts[i]; j++) result.push(s.colour);
+		});
+		return result;
+	}
 }

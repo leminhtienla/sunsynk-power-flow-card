@@ -64,28 +64,41 @@ export const renderCircle = (
 
 	// Số chấm = độ dài thực tế / khoảng cách mong muốn, tối thiểu 1 (lần
 	// render đầu tiên khi chưa đo được độ dài, mặc định 1 chấm như cũ).
-	// Nếu có cycleColours (nhiều nguồn đang pha trộn), ĐẢM BẢO số chấm tối
-	// thiểu bằng đúng số nguồn đang tham gia -- nếu không, đường ngắn (VD
-	// es-line/es-line2 chỉ ~2-3 chấm) có thể không đủ chỗ hiện ĐỒNG THỜI cả
-	// 3 màu (PV/Pin/Lưới) cùng lúc, khiến animation "không phản ánh đủ" các
-	// nguồn đang tham gia dù cycleColours đã tính đúng.
+	// KHÔNG ép tăng số chấm theo cycleColours.length nữa (từng làm ở bản
+	// trước) vì làm sai khoảng cách DOT_SPACING=15px trên đường ngắn (nhồi
+	// nhiều chấm hơn mức đường đó cho phép). Thay vào đó, nếu đường ngắn có
+	// ÍT chấm hơn số phần tử trong cycleColours, ta RESAMPLE (lấy mẫu lại)
+	// mảng màu theo đúng TỶ LỆ VỊ TRÍ để vẫn giữ đúng thứ tự/tỷ lệ các
+	// nguồn, chỉ là "nén" lại cho vừa số chấm thực có -- xem hàm
+	// resampleCycleColours bên dưới.
 	const pathLen = getPathLength(mpathHref);
-	const minDotsForColours = cycleColours ? cycleColours.length : 1;
 	const dotCount = pathLen
-		? Math.min(
-				MAX_DOTS,
-				Math.max(1, minDotsForColours, Math.round(pathLen / DOT_SPACING)),
-			)
-		: Math.max(1, minDotsForColours);
+		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
+		: 1;
 
 	// Làm tròn dur về 2 chữ số thập phân để làm "key" — chỉ ép tạo lại phần
 	// tử khi dur đổi ĐÁNG KỂ (>0.005s), tránh tạo lại liên tục vì sai số
 	// làm tròn cực nhỏ không đáng kể.
 	const durationKey = Math.round(adjustedDuration * 100) / 100;
 
+	// Lấy mẫu lại cycleColours (VD 5 phần tử theo tỷ lệ %) xuống đúng
+	// dotCount thực tế của đường này, GIỮ ĐÚNG THỨ TỰ/TỶ LỆ các khối màu --
+	// dùng vị trí tỷ lệ (i/dotCount * cycleColours.length) thay vì modulo
+	// đơn giản, để 1 chấm/2 chấm trên đường ngắn vẫn phản ánh đúng nguồn nào
+	// đang chiếm ưu thế thay vì lặp lại/cắt xén sai lệch.
+	const resampledColours =
+		cycleColours && cycleColours.length > 0
+			? Array.from({ length: dotCount }, (_, i) => {
+					const srcIdx = Math.min(
+						cycleColours.length - 1,
+						Math.floor((i * cycleColours.length) / dotCount),
+					);
+					return cycleColours[srcIdx];
+				})
+			: null;
+
 	if (dotCount <= 1) {
-		const singleFill =
-			cycleColours && cycleColours.length > 0 ? cycleColours[0] : fill;
+		const singleFill = resampledColours ? resampledColours[0] : fill;
 		return keyed(
 			durationKey,
 			svg`
@@ -113,12 +126,7 @@ export const renderCircle = (
 		durationKey,
 		svg`${Array.from({ length: dotCount }, (_, i) => {
 			const beginOffset = -((adjustedDuration * i) / dotCount);
-			// DOT thứ i lấy màu theo thứ tự cycleColours[i % length] nếu có
-			// (nhiều nguồn đang pha trộn) -- else dùng fill cố định như cũ.
-			const dotFill =
-				cycleColours && cycleColours.length > 0
-					? cycleColours[i % cycleColours.length]
-					: fill;
+			const dotFill = resampledColours ? resampledColours[i] : fill;
 			return svg`
             <circle id="${id}-${i}" cx="0" cy="0" r="${scaledRadius}" fill="${dotFill}">
                 <animateMotion dur="${adjustedDuration}s" repeatCount="indefinite"

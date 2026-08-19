@@ -64,13 +64,6 @@ export const renderCircle = (
 
 	// Số chấm = độ dài thực tế / khoảng cách mong muốn, tối thiểu 1 (lần
 	// render đầu tiên khi chưa đo được độ dài, mặc định 1 chấm như cũ).
-	// KHÔNG ép tăng số chấm theo cycleColours.length nữa (từng làm ở bản
-	// trước) vì làm sai khoảng cách DOT_SPACING=15px trên đường ngắn (nhồi
-	// nhiều chấm hơn mức đường đó cho phép). Thay vào đó, nếu đường ngắn có
-	// ÍT chấm hơn số phần tử trong cycleColours, ta RESAMPLE (lấy mẫu lại)
-	// mảng màu theo đúng TỶ LỆ VỊ TRÍ để vẫn giữ đúng thứ tự/tỷ lệ các
-	// nguồn, chỉ là "nén" lại cho vừa số chấm thực có -- xem hàm
-	// resampleCycleColours bên dưới.
 	const pathLen = getPathLength(mpathHref);
 	const dotCount = pathLen
 		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
@@ -80,29 +73,38 @@ export const renderCircle = (
 	// tử khi dur đổi ĐÁNG KỂ (>0.005s), tránh tạo lại liên tục vì sai số
 	// làm tròn cực nhỏ không đáng kể.
 	const durationKey = Math.round(adjustedDuration * 100) / 100;
+	const numColours = cycleColours ? cycleColours.length : 0;
 
-	// Lấy mẫu lại cycleColours (VD 5 phần tử theo tỷ lệ %) xuống đúng
-	// dotCount thực tế của đường này, GIỮ ĐÚNG THỨ TỰ/TỶ LỆ các khối màu --
-	// dùng vị trí tỷ lệ (i/dotCount * cycleColours.length) thay vì modulo
-	// đơn giản, để 1 chấm/2 chấm trên đường ngắn vẫn phản ánh đúng nguồn nào
-	// đang chiếm ưu thế thay vì lặp lại/cắt xén sai lệch.
-	const resampledColours =
-		cycleColours && cycleColours.length > 0
-			? Array.from({ length: dotCount }, (_, i) => {
-					const srcIdx = Math.min(
-						cycleColours.length - 1,
-						Math.floor((i * cycleColours.length) / dotCount),
-					);
-					return cycleColours[srcIdx];
-				})
-			: null;
+	/**
+	 * Sinh chuỗi <animate> đổi màu "kiểu băng chuyền" cho 1 chấm ở vị trí i:
+	 * mỗi khi chấm hoàn thành 1 vòng vị trí (mỗi adjustedDuration giây) và
+	 * "tái sinh" từ đầu đường, nó chuyển sang màu KẾ TIẾP trong chuỗi 5 phần
+	 * (cycleColours[(i + k*dotCount) % numColours] ở vòng thứ k). Nhờ vậy dù
+	 * đường ngắn chỉ hiện được VD 3 chấm cùng lúc (dotCount=3 < 5 phần),
+	 * theo thời gian (nhiều vòng lặp) cả 3 chấm đó vẫn LẦN LƯỢT đi qua đủ cả
+	 * 5 màu theo đúng thứ tự -- không "mất" quy luật tỷ lệ nguồn, chỉ là
+	 * trải dài ra theo thời gian thay vì không gian.
+	 */
+	const buildFillAnimate = (i: number, beginOffset: number) => {
+		if (!cycleColours || numColours === 0) return svg``;
+		const sequence = Array.from(
+			{ length: numColours },
+			(_, k) => cycleColours[(i + k * dotCount) % numColours],
+		);
+		const totalDur = adjustedDuration * numColours;
+		return svg`<animate attributeName="fill" attributeType="XML"
+			dur="${totalDur}s" begin="${beginOffset}s" repeatCount="indefinite"
+			calcMode="discrete" values="${sequence.join(';')}"/>`;
+	};
+	const initialFill = (i: number): string =>
+		cycleColours && numColours > 0 ? cycleColours[i % numColours] : fill;
 
 	if (dotCount <= 1) {
-		const singleFill = resampledColours ? resampledColours[0] : fill;
 		return keyed(
 			durationKey,
 			svg`
-            <circle id="${id}" cx="0" cy="0" r="${scaledRadius}" fill="${singleFill}">
+            <circle id="${id}" cx="0" cy="0" r="${scaledRadius}" fill="${initialFill(0)}">
+                ${buildFillAnimate(0, 0)}
                 <animateMotion dur="${adjustedDuration}s" repeatCount="indefinite"
                     keyPoints="${finalKeyPoints}"
                     keyTimes="0;1" calcMode="linear">
@@ -126,9 +128,9 @@ export const renderCircle = (
 		durationKey,
 		svg`${Array.from({ length: dotCount }, (_, i) => {
 			const beginOffset = -((adjustedDuration * i) / dotCount);
-			const dotFill = resampledColours ? resampledColours[i] : fill;
 			return svg`
-            <circle id="${id}-${i}" cx="0" cy="0" r="${scaledRadius}" fill="${dotFill}">
+            <circle id="${id}-${i}" cx="0" cy="0" r="${scaledRadius}" fill="${initialFill(i)}">
+                ${buildFillAnimate(i, beginOffset)}
                 <animateMotion dur="${adjustedDuration}s" repeatCount="indefinite"
                     begin="${beginOffset}s"
                     keyPoints="${finalKeyPoints}"

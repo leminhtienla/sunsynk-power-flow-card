@@ -87,35 +87,45 @@ export const renderCircle = (
 	const numColours = cycleColours ? cycleColours.length : 0;
 
 	/**
-	 * Sinh chuỗi <animate> đổi màu "kiểu băng chuyền" cho 1 chấm ở vị trí i:
-	 * mỗi khi chấm hoàn thành 1 vòng vị trí (mỗi adjustedDuration giây) và
-	 * "tái sinh" từ đầu đường, nó chuyển sang màu KẾ TIẾP trong chuỗi 5 phần
-	 * (cycleColours[(i + k*dotCount) % numColours] ở vòng thứ k). Nhờ vậy dù
-	 * đường ngắn chỉ hiện được VD 3 chấm cùng lúc (dotCount=3 < 5 phần),
-	 * theo thời gian (nhiều vòng lặp) cả 3 chấm đó vẫn LẦN LƯỢT đi qua đủ cả
-	 * 5 màu theo đúng thứ tự -- không "mất" quy luật tỷ lệ nguồn, chỉ là
-	 * trải dài ra theo thời gian thay vì không gian.
+	 * Sinh chuỗi <animate> đổi màu "kiểu vòng quay đều" cho 1 chấm ở vị trí
+	 * i. THIẾT KẾ LẠI (đã mô phỏng số học xác nhận đều hơn hẳn cách cũ):
+	 *   - offset[i] = round(i * numColours / dotCount) % numColours -- dàn
+	 *     ĐỀU các chấm quanh "vòng tròn 5 phần" thay vì công thức
+	 *     (i + k*dotCount) cũ (từng gây tình trạng nhiều chấm cùng trùng 1
+	 *     màu tại cùng thời điểm, mô phỏng cho thấy có lúc 0/3 hoặc 3/3 chấm
+	 *     cùng 1 màu dù trung bình đúng tỷ lệ).
+	 *   - TẤT CẢ chấm dùng CHUNG 1 "nhịp bước" toàn cục (begin=0 giống nhau
+	 *     cho animate màu, KHÔNG dùng beginOffset theo vị trí như trước) --
+	 *     chỉ khác nhau ở offset khởi đầu -- đảm bảo tại bất kỳ thời điểm
+	 *     nào, các chấm đang hiển thị luôn là 1 tập hợp CÁCH ĐỀU trên vòng
+	 *     tròn 5 phần, không bao giờ dồn cụm.
+	 *   - beginOffset (theo vị trí, để dàn cách đều KHÔNG GIAN dọc đường)
+	 *     CHỈ áp dụng cho <animateMotion>, không còn dùng cho <animate> màu.
 	 */
-	const buildFillAnimate = (i: number, beginOffset: number) => {
+	const buildFillAnimate = (i: number) => {
 		if (!cycleColours || numColours === 0) return svg``;
+		const startOffset = Math.round((i * numColours) / dotCount) % numColours;
 		const sequence = Array.from(
 			{ length: numColours },
-			(_, k) => cycleColours[(i + k * dotCount) % numColours],
+			(_, k) => cycleColours[(startOffset + k) % numColours],
 		);
 		const totalDur = adjustedDuration * numColours;
 		return svg`<animate attributeName="fill" attributeType="XML"
-			dur="${totalDur}s" begin="${beginOffset}s" repeatCount="indefinite"
+			dur="${totalDur}s" begin="0s" repeatCount="indefinite"
 			calcMode="discrete" values="${sequence.join(';')}"/>`;
 	};
-	const initialFill = (i: number): string =>
-		cycleColours && numColours > 0 ? cycleColours[i % numColours] : fill;
+	const initialFill = (i: number): string => {
+		if (!cycleColours || numColours === 0) return fill;
+		const startOffset = Math.round((i * numColours) / dotCount) % numColours;
+		return cycleColours[startOffset];
+	};
 
 	if (dotCount <= 1) {
 		return keyed(
 			durationKey,
 			svg`
             <circle id="${id}" cx="0" cy="0" r="${scaledRadius}" fill="${initialFill(0)}">
-                ${buildFillAnimate(0, 0)}
+                ${buildFillAnimate(0)}
                 <animateMotion dur="${adjustedDuration}s" repeatCount="indefinite"
                     keyPoints="${finalKeyPoints}"
                     keyTimes="0;1" calcMode="linear">
@@ -141,7 +151,7 @@ export const renderCircle = (
 			const beginOffset = -((adjustedDuration * i) / dotCount);
 			return svg`
             <circle id="${id}-${i}" cx="0" cy="0" r="${scaledRadius}" fill="${initialFill(i)}">
-                ${buildFillAnimate(i, beginOffset)}
+                ${buildFillAnimate(i)}
                 <animateMotion dur="${adjustedDuration}s" repeatCount="indefinite"
                     begin="${beginOffset}s"
                     keyPoints="${finalKeyPoints}"

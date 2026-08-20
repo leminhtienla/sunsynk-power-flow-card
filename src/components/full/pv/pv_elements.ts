@@ -637,10 +637,10 @@ export const renderSolarElements = (
 			)}
 			${createTextWithPopup(
 				'environ_temp',
-				74,
+				86.5,
 				32,
 				!data.stateEnvironmentTemp.isValid(),
-				config.entities?.environment_temp ? 'st3 left-align' : 'st12',
+				config.entities?.environment_temp ? 'st3' : 'st12',
 				solarLiveColour,
 				`${data.stateEnvironmentTemp.toNum(1)}°`,
 				(e) => Utils.handlePopup(e, config.entities.environment_temp),

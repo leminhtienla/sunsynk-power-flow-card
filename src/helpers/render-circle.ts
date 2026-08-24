@@ -80,10 +80,15 @@ export const renderCircle = (
 		? Math.min(MAX_DOTS, Math.max(1, Math.round(pathLen / DOT_SPACING)))
 		: 1;
 
-	// Làm tròn dur về 2 chữ số thập phân để làm "key" — chỉ ép tạo lại phần
-	// tử khi dur đổi ĐÁNG KỂ (>0.005s), tránh tạo lại liên tục vì sai số
-	// làm tròn cực nhỏ không đáng kể.
-	const durationKey = Math.round(adjustedDuration * 100) / 100;
+	// Làm tròn dur để làm "key" — CHỈ ép tạo lại nhóm chấm khi tốc độ đổi
+	// ĐÁNG KỂ. Trước đây làm tròn tới 0.01s -- quá nhạy: cảm biến công suất
+	// thực tế luôn dao động nhiễu nhẹ (VD ±2-5W dù tải ổn định), mỗi lần
+	// hass cập nhật (vài giây/lần) gần như luôn đủ để vượt ngưỡng 0.01s,
+	// khiến TOÀN BỘ nhóm chấm (animateMotion + animate màu) bị xóa/tạo lại
+	// liên tục -> animation giật/khựng theo đúng chu kỳ cập nhật dữ liệu.
+	// Nới lên 0.3s: vẫn đủ nhạy để phản ánh đúng khi công suất đổi thật sự
+	// (VD tăng/giảm tải rõ rệt), nhưng bỏ qua dao động nhiễu nhỏ.
+	const durationKey = Math.round(adjustedDuration / 0.3) * 0.3;
 	const numColours = cycleColours ? cycleColours.length : 0;
 
 	/**

@@ -158,7 +158,6 @@ export const renderAuxLoadElements = (
 					'#aux-line',
 					false,
 					data.epsCycleColours,
-				['#aux-line2', '#aux-line2-lower', '#aux-line2-upper'],
 				)}
 				${renderCircle(
 					'aux-dot',
@@ -172,7 +171,6 @@ export const renderAuxLoadElements = (
 					'#aux-line',
 					false,
 					data.epsCycleColours,
-				['#aux-line2', '#aux-line2-lower', '#aux-line2-upper'],
 				)}
 			</svg>
 			<svg id="aux1-flow">
@@ -213,7 +211,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2-lower',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2', '#aux-line2-upper'],
 					)}
                     ${renderCircle(
 						'aux-dot-lower',
@@ -227,7 +224,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2-lower',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2', '#aux-line2-upper'],
 					)}
                     ${renderCircle(
 						'aux-dot-upper',
@@ -241,7 +237,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2-upper',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2', '#aux-line2-lower'],
 					)}
                     ${renderCircle(
 						'aux-dot-upper',
@@ -255,7 +250,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2-upper',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2', '#aux-line2-lower'],
 					)}
                 `
 					: svg`
@@ -280,7 +274,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2-lower', '#aux-line2-upper'],
 					)}
                     ${renderCircle(
 						'aux-dot',
@@ -294,7 +287,6 @@ export const renderAuxLoadElements = (
 						'#aux-line2',
 						false,
 						data.epsCycleColours,
-					['#aux-line', '#aux-line2-lower', '#aux-line2-upper'],
 					)}
                 `}
 			</svg>

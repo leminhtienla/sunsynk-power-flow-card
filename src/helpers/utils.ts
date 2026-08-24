@@ -251,8 +251,11 @@ export class Utils {
 	 * VD: PV 40% + Pin 60% -> [PV,PV,Pin,Pin,Pin] (2 dot PV liên tiếp rồi 3
 	 * dot Pin liên tiếp) thay vì [PV,Pin,PV,Pin,Pin] (xen kẽ).
 	 * VD 3 nguồn 20/40/40% -> [PV,Pin,Pin,Lưới,Lưới] (1/2/2).
-	 * Nguồn có %>0 nhưng làm tròn ra 0 phần vẫn được đảm bảo tối thiểu 1
-	 * phần (để không "biến mất" khỏi animation dù đóng góp rất nhỏ).
+	 * Nguồn có %>0 nhưng làm tròn về 0 phần (đóng góp quá nhỏ so với tổng,
+	 * VD <10% khi tổng cộng 5 phần) sẽ TỰ LOẠI khỏi vòng quay màu -- KHÔNG
+	 * ép tối thiểu 1 phần nữa (từng làm PV chỉ đóng góp ~1% vẫn bị phóng đại
+	 * hiển thị thành 20%, sai lệch nghiêm trọng khi tỷ lệ 2 nguồn chênh lệch
+	 * rất lớn, VD 1%/99%).
 	 */
 	static buildCycleColours(
 		sources: { percentage: number; colour: string }[],
@@ -262,11 +265,9 @@ export class Utils {
 		if (active.length === 0) return [];
 		if (active.length === 1) return [active[0].colour];
 
-		let counts = active.map((s) =>
+		const counts = active.map((s) =>
 			Math.round((s.percentage / 100) * TOTAL_SLOTS),
 		);
-		// Đảm bảo mỗi nguồn đang hoạt động có tối thiểu 1 phần.
-		counts = counts.map((c) => Math.max(1, c));
 
 		// Điều chỉnh cho tổng đúng bằng TOTAL_SLOTS (làm tròn có thể lệch).
 		let diff = TOTAL_SLOTS - counts.reduce((a, b) => a + b, 0);
@@ -278,7 +279,7 @@ export class Utils {
 			} else {
 				const reducible = counts
 					.map((c, i) => ({ c, i }))
-					.filter((x) => x.c > 1);
+					.filter((x) => x.c > 0);
 				if (reducible.length === 0) break;
 				const target = reducible.reduce((a, b) => (a.c >= b.c ? a : b));
 				counts[target.i]--;

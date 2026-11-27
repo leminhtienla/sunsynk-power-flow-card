@@ -416,7 +416,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'duration_text',
 					132,
-					376,
+					378,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 ||
@@ -431,7 +431,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'duration_text_charging',
 					132,
-					376,
+					378,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 ||
@@ -446,7 +446,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'floating',
 					132,
-					376,
+					378,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 || !isFloating

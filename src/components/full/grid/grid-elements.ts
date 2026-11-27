@@ -322,7 +322,7 @@ export const renderGridElements = (
 			${renderText(
 				'daily_grid_buy',
 				dailyBuyX,
-				375,
+				378.5,
 				data.gridShowDailyBuy !== true,
 				'st-grid-daily-label left-align',
 				data.stateDayGridImport.toNum() > 0 ? gridColour : 'grey',
@@ -332,7 +332,7 @@ export const renderGridElements = (
 			${renderText(
 				'daily_grid_sell',
 				dailySellX,
-				375,
+				378.5,
 				data.gridShowDailySell !== true,
 				'st-grid-daily-label left-align',
 				data.stateDayGridExport.toNum() > 0 ? gridColour : 'grey',
@@ -674,7 +674,7 @@ export const renderGridElements = (
 			${createTextWithPopup(
 				'daily_grid_buy_value',
 				dailyBuyX,
-				362,
+				365,
 				data.gridShowDailyBuy !== true || !data.stateDayGridImport.isValid(),
 				'st4 left-align',
 				data.stateDayGridImport.toNum() > 0 ? gridColour : 'grey',
@@ -685,7 +685,7 @@ export const renderGridElements = (
 			${createTextWithPopup(
 				'daily_grid_sell_value',
 				dailySellX,
-				362,
+				365,
 				data.gridShowDailySell !== true || !data.stateDayGridExport.isValid(),
 				'st4 left-align',
 				data.stateDayGridExport.toNum() > 0 ? gridColour : 'grey',
@@ -696,7 +696,7 @@ export const renderGridElements = (
 			${createTextWithPopup(
 				'max_sell_power',
 				dailySellX,
-				348,
+				351,
 				!data.stateMaxSellPower.isValid || !config.entities?.max_sell_power,
 				'st3 left-align',
 				['off', '0'].includes(data.stateSolarSell.state) ? 'grey' : gridColour,

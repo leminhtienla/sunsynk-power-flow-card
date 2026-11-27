@@ -877,7 +877,7 @@ export const renderBatteryElements = (
 			<svg id="battery1_data" x="${batteryCount === 2 ? '16.25%' : '0%'}">
 				<rect
 					x="51"
-					y="${batteryCount === 2 ? '320.75' : '300.75'}"
+					y="${batteryCount === 2 ? '320.75' : '310.75'}"
 					width="${batteryCount === 2 ? 40 : 70}"
 					height="${batteryCount === 2 ? 50 : 70}"
 					rx="${batteryCount === 2 ? 4.5 : 10.5}"
@@ -889,7 +889,7 @@ export const renderBatteryElements = (
 				${createTextWithPopup(
 					'battery_voltage_183',
 					batteryCount === 2 ? 25 : 86,
-					batteryCount === 2 ? 329.5 : 317,
+					batteryCount === 2 ? 329.5 : 327,
 					config.entities.battery_voltage_183 === 'none' ||
 						!config.entities.battery_voltage_183,
 					batteryCount === 2
@@ -905,7 +905,7 @@ export const renderBatteryElements = (
 				${createTextWithPopup(
 					'battery_power_190',
 					batteryCount === 2 ? 25 : 86,
-					batteryCount === 2 ? 362 : 356,
+					batteryCount === 2 ? 362 : 366,
 					config.entities.battery_power_190 === 'none',
 					batteryCount === 2
 						? 'st3 st8'
@@ -931,7 +931,7 @@ export const renderBatteryElements = (
 				${createTextWithPopup(
 					'battery_current_191',
 					batteryCount === 2 ? 25 : 86,
-					batteryCount === 2 ? 345.75 : 336,
+					batteryCount === 2 ? 345.75 : 346,
 					config.entities.battery_current_191 === 'none' ||
 						!data.stateBatteryCurrent.isValid(),
 					batteryCount === 2
@@ -1113,8 +1113,8 @@ export const renderBatteryElements = (
 					config.wide
 						? batteryCount === 2
 							? 'M 279 280 L 156 281'
-							: 'M 279 280 L 96 280 Q 86 280 86 290 L 86 297'
-						: 'M 155 280 L 96 280 Q 86 280 86 290 L 86 300.75',
+							: 'M 279 280 L 96 280 Q 86 280 86 290 L 86 307'
+						: 'M 155 280 L 96 280 Q 86 280 86 290 L 86 310.75',
 					true,
 					// Đường Pin <-> Inverter: khi Inverter Standby thì chuyển
 					// grey, tắt animation. LUÔN batteryColour riêng (bỏ mixing

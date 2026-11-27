@@ -1058,7 +1058,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'daily_bat_charge',
 					4.5,
-					251,
+					246,
 					data.batteryShowDaily !== true,
 					'st3 left-align',
 					data.stateDayBatteryCharge.toNum() > 0 ? batteryColour : 'grey',
@@ -1068,7 +1068,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'daily_bat_discharge',
 					4.5,
-					285,
+					280,
 					data.batteryShowDaily !== true,
 					'st3 left-align',
 					data.stateDayBatteryDischarge.toNum() > 0 ? batteryColour : 'grey',
@@ -1079,7 +1079,7 @@ export const renderBatteryElements = (
 				${createTextWithPopup(
 					'daily_bat_charge_value',
 					4.5,
-					237,
+					232,
 					data.batteryShowDaily !== true ||
 						!data.stateDayBatteryCharge.isValid(),
 					'st10 left-align',
@@ -1094,7 +1094,7 @@ export const renderBatteryElements = (
 				${createTextWithPopup(
 					'daily_bat_discharge_value',
 					4.5,
-					271,
+					266,
 					data.batteryShowDaily !== true ||
 						!data.stateDayBatteryDischarge.isValid(),
 					'st10 left-align',

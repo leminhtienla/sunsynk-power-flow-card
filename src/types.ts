@@ -670,6 +670,7 @@ export interface HomeLoadExtraItemConfig {
 	tap_entity?: string;
 	navigate?: string;
 	hide_when_inactive?: boolean;
+	state_as_name?: boolean;
 }
 
 export interface HomeLoadExtraItemData {

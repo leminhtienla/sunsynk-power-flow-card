@@ -3720,6 +3720,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 				domain === 'light' ||
 				domain === 'fan';
 
+			const fallbackName =
+				main.friendlyName ||
+				item.entity.split('.').slice(1).join('.').replace(/_/g, ' ');
+			let displayName = item.name || fallbackName;
 			let valueText = mainFmt.text;
 			if (extra && extra.valid && extraFmt) {
 				if (isToggleDomain) {
@@ -3729,7 +3733,12 @@ export class SunsynkPowerFlowCard extends LitElement {
 				} else {
 					const extraNonZero = !extraFmt.isNum || Math.abs(extraFmt.numVal) > 0;
 					if (extraNonZero) {
-						valueText = `${mainFmt.text} ${extraFmt.text}`;
+						if (item.state_as_name && isActive) {
+							displayName = mainFmt.text;
+							valueText = extraFmt.text;
+						} else {
+							valueText = `${mainFmt.text} ${extraFmt.text}`;
+						}
 					}
 				}
 			}
@@ -3741,15 +3750,11 @@ export class SunsynkPowerFlowCard extends LitElement {
 				? this.colourConvert(item.inactive_colour)
 				: 'grey';
 
-			const fallbackName =
-				main.friendlyName ||
-				item.entity.split('.').slice(1).join('.').replace(/_/g, ' ');
-
 			results.push({
 				entity: item.entity,
 				tapEntity: item.tap_entity || item.entity,
 				navigate: item.navigate,
-				name: item.name || fallbackName,
+				name: displayName,
 				icon: item.icon ?? main.attrIcon,
 				valueText,
 				colour: isActive ? activeColour : inactiveColour,

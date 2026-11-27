@@ -416,7 +416,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'duration_text',
 					132,
-					368,
+					376,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 ||
@@ -431,7 +431,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'duration_text_charging',
 					132,
-					368,
+					376,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 ||
@@ -446,7 +446,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'floating',
 					132,
-					368,
+					376,
 					true,
 					'st3 left-align',
 					data.batteryEnergy === 0 || !isFloating
@@ -457,7 +457,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'battery_soc_184',
 					202,
-					327,
+					337,
 					!data.inverterProg.show && config.battery?.shutdown_soc_offgrid,
 					`${config.battery.hide_soc ? 'st12' : 'st14 left-align'}`,
 					batteryColour,
@@ -466,7 +466,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'battery_soc_184',
 					202,
-					340,
+					350,
 					!data.inverterProg.show && config.battery?.shutdown_soc_offgrid,
 					`${config.battery.hide_soc ? 'st12' : 'st14 left-align'}`,
 					batteryColour,
@@ -483,7 +483,7 @@ export const renderBatteryElements = (
 					${createTextWithPopup(
 						'battery_soc_184',
 						132.5,
-						333,
+						343,
 						config.entities.battery_soc_184 === 'none' ||
 							!data.stateBatterySoc.isValid(),
 						'st13 st8 left-align',
@@ -512,7 +512,7 @@ export const renderBatteryElements = (
 					${createTextWithPopup(
 						'battery_soc_184',
 						132.5,
-						333,
+						343,
 						true,
 						'st13 st8 left-align',
 						batteryColour,
@@ -535,7 +535,7 @@ export const renderBatteryElements = (
 					${createTextWithPopup(
 						'battery_soc_184',
 						132.5,
-						333,
+						343,
 						true,
 						'st13 st8 left-align',
 						batteryColour,
@@ -546,7 +546,7 @@ export const renderBatteryElements = (
 				${renderText(
 					'duration',
 					132,
-					352,
+					362,
 					true,
 					`${largeFont !== true ? 'st14' : 'st4'} left-align`,
 					data.batteryEnergy === 0 || isFloating || batteryPower === 0

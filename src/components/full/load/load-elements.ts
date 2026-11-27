@@ -992,6 +992,122 @@ export const renderLoadElements = (
 				data.stateEssentialLoad4.toPowerString(auto_scale, decimalPlaces),
 				(e) => Utils.handlePopup(e, config.entities.essential_load4),
 			)}
+			${renderHomeLoadExtraItems(data, config, homeLoadColour)}
 		</svg>
+	`;
+};
+
+const renderHomeLoadExtraItems = (
+	data: DataDto,
+	config: sunsynkPowerFlowCardConfig,
+	borderColour: string,
+) => {
+	const items = data.homeLoadExtraItems;
+	if (!items || items.length === 0) return '';
+
+	// Vùng ô vàng ngay dưới nhãn "HOME LOAD" (y=157) và trên cụm
+	// "DAILY GRID SELL / BUY" (y=362): x=337..460 (rộng 123px), y=166..348
+	// (cao 182px). Tự co giãn chiều cao dòng theo số mục cấu hình.
+	const panelX = [1, 2].includes(config.solar?.mppts) ? 337 : 347;
+	const panelRight = 460;
+	const panelW = panelRight - panelX;
+	const panelY = 166;
+	const panelMaxH = 182;
+	const padY = 4;
+	const maxInnerH = panelMaxH - padY * 2;
+	const maxVisible = Math.min(items.length, Math.floor(maxInnerH / 18));
+	const visibleItems = items.slice(0, maxVisible);
+	const rowH = Math.min(
+		25,
+		Math.max(18, Math.floor(maxInnerH / visibleItems.length)),
+	);
+	const panelH = Math.min(panelMaxH, visibleItems.length * rowH + padY * 2);
+
+	return svg`
+		<g id="home-load-extra-items">
+			<rect
+				x="${panelX}"
+				y="${panelY}"
+				width="${panelW}"
+				height="${panelH}"
+				rx="6"
+				ry="6"
+				fill="none"
+				stroke="${borderColour}"
+				stroke-opacity="0.35"
+				stroke-width="0.8"
+			/>
+			${visibleItems.map((item, idx) => {
+				const rowTop = panelY + padY + idx * rowH;
+				const cy = rowTop + rowH / 2;
+				const nameX = item.icon ? panelX + 20 : panelX + 6;
+				const valX = panelRight - 4;
+				const estValW = item.valueText.length * 4.6 + 6;
+				const maxNameChars = Math.max(
+					4,
+					Math.floor((valX - nameX - estValW) / 4.2),
+				);
+				const displayName =
+					item.name.length > maxNameChars
+						? `${item.name.slice(0, Math.max(1, maxNameChars - 1))}…`
+						: item.name;
+				const onClick = (e: Event) =>
+					item.navigate
+						? Utils.handleNavigation(e, item.navigate)
+						: Utils.handlePopup(e, item.tapEntity);
+
+				return svg`
+					${
+						idx > 0
+							? svg`<line
+									x1="${panelX + 5}"
+									y1="${rowTop}"
+									x2="${panelRight - 5}"
+									y2="${rowTop}"
+									stroke="${borderColour}"
+									stroke-opacity="0.16"
+									stroke-width="0.6"
+								/>`
+							: ''
+					}
+					<a href="#" @click=${onClick}>
+						<rect
+							x="${panelX + 1}"
+							y="${rowTop}"
+							width="${panelW - 2}"
+							height="${rowH}"
+							fill="transparent"
+						/>
+						${
+							item.icon
+								? svg`<foreignObject x="${panelX + 4}" y="${cy - 7}" width="14" height="14">
+										<div xmlns="http://www.w3.org/1999/xhtml" style="width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">
+											<ha-icon icon="${item.icon}" style="color: ${item.colour}; --mdc-icon-size: 14px; display: flex;"></ha-icon>
+										</div>
+									</foreignObject>`
+								: ''
+						}
+						<text
+							id="home_extra_name_${idx}"
+							x="${nameX}"
+							y="${cy + 0.5}"
+							class="st-extra-name left-align"
+							fill="${item.colour}"
+						>
+							${displayName}
+						</text>
+						<text
+							id="home_extra_val_${idx}"
+							x="${valX}"
+							y="${cy + 0.5}"
+							class="st-extra-val st8 right-align"
+							fill="${item.colour}"
+						>
+							${item.valueText}
+						</text>
+					</a>
+				`;
+			})}
+		</g>
 	`;
 };

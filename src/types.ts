@@ -215,6 +215,7 @@ export interface sunsynkPowerFlowCardConfig extends LovelaceCardConfig {
 		navigate: string;
 		invert_flow: boolean;
 		label_daily_load: string;
+		extra_items?: HomeLoadExtraItemConfig[];
 	};
 	grid: {
 		colour: string;
@@ -646,4 +647,38 @@ export interface DataDto {
 	customGridIconColour;
 	maximumSOC;
 	batteryCount;
+	homeLoadExtraItems: HomeLoadExtraItemData[];
+}
+
+export interface HomeLoadExtraItemConfig {
+	entity: string;
+	name?: string;
+	icon?: string;
+	attribute?: string;
+	unit?: string;
+	decimals?: number;
+	extra_entity?: string;
+	extra_attribute?: string;
+	extra_unit?: string;
+	extra_decimals?: number;
+	colour?: string;
+	inactive_colour?: string;
+	active_above?: number;
+	active_states?: string[];
+	inactive_states?: string[];
+	state_map?: Record<string, string>;
+	tap_entity?: string;
+	navigate?: string;
+	hide_when_inactive?: boolean;
+}
+
+export interface HomeLoadExtraItemData {
+	entity: string;
+	tapEntity: string;
+	navigate?: string;
+	name: string;
+	icon?: string;
+	valueText: string;
+	colour: string;
+	isActive: boolean;
 }

@@ -80,6 +80,18 @@ export const styles: CSSResultGroup = css`
 	.remaining-energy {
 		font-size: 9px;
 	}
+	.st-status {
+		font-size: 8.5px;
+	}
+	.st-grid-daily-label {
+		font-size: 7px;
+	}
+	.st-extra-name {
+		font-size: 8.5px;
+	}
+	.st-extra-val {
+		font-size: 9px;
+	}
 `;
 
 export const getDynamicStyles = (data) => html`
@@ -126,7 +138,7 @@ export const getDynamicStyles = (data) => html`
 
 		.grid-icon {
 			color: ${data.customGridIconColour} !important;
-			--mdc-icon-size: 64px;
+			--mdc-icon-size: 60px;
 		}
 
 		.essload1-icon-full {

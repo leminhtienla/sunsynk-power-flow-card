@@ -35,32 +35,36 @@ const renderGridIcons = (data: DataDto, config: sunsynkPowerFlowCardConfig) => {
 	const gridColour =
 		Math.abs(Utils.toNum(totalGridPower, 0)) < 1 ? 'grey' : data.gridColour;
 	const three_phase = config.inverter.three_phase;
+	const gridCx = [1, 2].includes(config.solar?.mppts) ? 294 : 309;
+	const iconX = three_phase ? gridCx - 17 : gridCx - 30;
+	const iconY = three_phase ? 339 : 313;
+	const iconSize = three_phase ? 34 : 60;
 
 	return svg`
         <svg xmlns="http://www.w3.org/2000/svg" id="transmission_on"
-            x="${three_phase ? '404' : '389'}"
-            y="${three_phase ? '339' : '308'}"
-            width="${three_phase ? '34' : '65'}"
-            height="${three_phase ? '34' : '65'}" viewBox="0 0 24 24">
+            x="${iconX}"
+            y="${iconY}"
+            width="${iconSize}"
+            height="${iconSize}" viewBox="0 0 24 24">
             <path class="${isGridDisconnected ? 'st12' : ''}"
                 fill="${gridColour}"
                 display="${totalGridPower < 0 || config.grid.import_icon ? 'none' : ''}"
                 d="${icons.gridOn}"/>
         </svg>
         <svg xmlns="http://www.w3.org/2000/svg" id="transmission_off"
-            x="${three_phase ? '404' : '389'}"
-            y="${three_phase ? '339' : '308'}"
-            width="${three_phase ? '34' : '65'}"
-            height="${three_phase ? '34' : '65'}" viewBox="0 0 24 24">
+            x="${iconX}"
+            y="${iconY}"
+            width="${iconSize}"
+            height="${iconSize}" viewBox="0 0 24 24">
             <path class="${isGridConnected ? 'st12' : ''}"
                 fill="${data.gridOffColour}" display="${config.grid.disconnected_icon ? 'none' : ''}"
                 d="${icons.gridOff}"/>
         </svg>
         <svg xmlns="http://www.w3.org/2000/svg" id="grid_export"
-            x="${three_phase ? '404' : '389'}"
-            y="${three_phase ? '339' : '308'}"
-            width="${three_phase ? '34' : '65'}"
-            height="${three_phase ? '34' : '65'}" viewBox="0 0 24 24">
+            x="${iconX}"
+            y="${iconY}"
+            width="${iconSize}"
+            height="${iconSize}" viewBox="0 0 24 24">
             <path class="${isGridDisconnected ? 'st12' : ''}"
                 fill="${gridColour}"
                 display="${totalGridPower >= 0 || config.grid.export_icon ? 'none' : ''}"
@@ -106,6 +110,11 @@ export const renderGridElements = (
 		Math.abs(Utils.toNum(totalGridPower, 0)) < 1 ? 'grey' : gridColour;
 
 	const { three_phase } = config.inverter;
+	const isLowMppt = [1, 2].includes(config.solar?.mppts);
+	const gridBoxX = isLowMppt ? 259 : 274;
+	const gridCx = gridBoxX + 35;
+	const dailySellX = isLowMppt ? 336 : 344;
+	const dailyBuyX = isLowMppt ? 406 : 408;
 
 	return html`
 		<!-- Grid Elements -->
@@ -195,7 +204,7 @@ export const renderGridElements = (
 				)}
 			</svg>
 			<rect
-				x="${[1, 2].includes(config.solar?.mppts) ? '259' : '274'}"
+				x="${gridBoxX}"
 				y="162"
 				width="70"
 				height="50"
@@ -206,10 +215,10 @@ export const renderGridElements = (
 				pointer-events="all"
 			/>
 			<rect
-				x="386"
-				y="225"
+				x="${gridBoxX}"
+				y="231"
 				width="70"
-				height="70"
+				height="68"
 				rx="10.5"
 				ry="10.5"
 				fill="none"
@@ -303,8 +312,8 @@ export const renderGridElements = (
 			)}
 			${renderText(
 				'grid_name',
-				421,
-				377,
+				gridCx,
+				378,
 				true,
 				'st3 st8',
 				data.customGridIconColour,
@@ -312,28 +321,20 @@ export const renderGridElements = (
 			)}
 			${renderText(
 				'daily_grid_buy',
-				!showNonessential ? '311' : '347',
-				!showNonessential
-					? '368'
-					: config.entities?.max_sell_power
-						? '256'
-						: '253',
+				dailyBuyX,
+				375,
 				data.gridShowDailyBuy !== true,
-				'st3 left-align',
+				'st-grid-daily-label left-align',
 				data.stateDayGridImport.toNum() > 0 ? gridColour : 'grey',
 				config.grid.label_daily_grid_buy || localize('common.daily_grid_buy'),
 				true,
 			)}
 			${renderText(
 				'daily_grid_sell',
-				!showNonessential ? '311' : '347',
-				!showNonessential
-					? '337'
-					: config.entities?.max_sell_power
-						? '225'
-						: '222',
+				dailySellX,
+				375,
 				data.gridShowDailySell !== true,
-				'st3 left-align',
+				'st-grid-daily-label left-align',
 				data.stateDayGridExport.toNum() > 0 ? gridColour : 'grey',
 				config.grid.label_daily_grid_sell || localize('common.daily_grid_sell'),
 				true,
@@ -351,7 +352,7 @@ export const renderGridElements = (
 			<svg id="grid-flow">
 				${renderPath(
 					'grid-line',
-					[1, 2].includes(config.solar?.mppts) ? 'M 329 187 L 411 187 Q 421 187 421 197 L421 225' : 'M 344 187 L 411 187 Q 421 187 421 197 L421 225',
+					`M ${gridCx} 212 L ${gridCx} 231`,
 					true,
 					// Dùng gridRealBoxColour (đã ép grey đúng chuẩn khi
 					// |totalGridPower|<1) thay vì gridColour trực tiếp --
@@ -391,7 +392,9 @@ export const renderGridElements = (
 			<svg id="grid1-flow">
 				${renderPath(
 					'grid-line1',
-					three_phase ? 'M 421 295 L 421 337' : 'M 421 295 L 421 310.5',
+					three_phase
+						? `M ${gridCx} 299 L ${gridCx} 337`
+						: `M ${gridCx} 299 L ${gridCx} 314`,
 					true,
 					gridRealBoxColour,
 					data.gridLineWidth,
@@ -403,7 +406,7 @@ export const renderGridElements = (
 						8,
 					),
 					totalGridPower <= 0 ? 'transparent' : gridColour,
-					data.durationCur['grid'] / 1.5,
+					data.durationCur['grid'],
 					'1;0',
 					'#grid-line1',
 					invert_flow === true,
@@ -416,7 +419,7 @@ export const renderGridElements = (
 						8,
 					),
 					totalGridPower >= 0 ? 'transparent' : gridColour,
-					data.durationCur['grid'] / 1.5,
+					data.durationCur['grid'],
 					'0;1',
 					'#grid-line1',
 					invert_flow === true,
@@ -537,6 +540,7 @@ export const renderGridElements = (
 									data.totalGridPower >= 0,
 									data.gridColour,
 									three_phase,
+									config.solar?.mppts,
 									config.grid.import_icon,
 									config.grid.export_icon,
 									config.grid.disconnected_icon,
@@ -553,6 +557,7 @@ export const renderGridElements = (
 									data.totalGridPower >= 0,
 									data.gridColour,
 									three_phase,
+									config.solar?.mppts,
 									config.grid.import_icon,
 									config.grid.export_icon,
 									config.grid.disconnected_icon,
@@ -568,10 +573,10 @@ export const renderGridElements = (
 															undefined,
 															data.customGridIcon,
 															three_phase ? 'grid-icon-small' : 'grid-icon',
-															three_phase ? '404' : '389',
-															three_phase ? '339' : '308',
-															three_phase ? 34 : 65,
-															three_phase ? 34 : 65,
+															three_phase ? gridCx - 17 : gridCx - 30,
+															three_phase ? 339 : 313,
+															three_phase ? 34 : 60,
+															three_phase ? 34 : 60,
 															true,
 														)}
                         </g>
@@ -583,10 +588,10 @@ export const renderGridElements = (
 															undefined,
 															data.customGridIcon,
 															three_phase ? 'grid-icon-small' : 'grid-icon',
-															three_phase ? '404' : '389',
-															three_phase ? '339' : '308',
-															three_phase ? 34 : 65,
-															three_phase ? 34 : 65,
+															three_phase ? gridCx - 17 : gridCx - 30,
+															three_phase ? 339 : 313,
+															three_phase ? 34 : 60,
+															three_phase ? 34 : 60,
 															true,
 														)}
                         </g>
@@ -668,14 +673,10 @@ export const renderGridElements = (
 			</g>
 			${createTextWithPopup(
 				'daily_grid_buy_value',
-				!showNonessential ? '311' : '347',
-				!showNonessential
-					? '354'
-					: config.entities?.max_sell_power
-						? '242'
-						: '239',
+				dailyBuyX,
+				362,
 				data.gridShowDailyBuy !== true || !data.stateDayGridImport.isValid(),
-				'st10 left-align',
+				'st4 left-align',
 				data.stateDayGridImport.toNum() > 0 ? gridColour : 'grey',
 				data.stateDayGridImport.toPowerString(true, data.decimalPlacesEnergy),
 				(e) => Utils.handlePopup(e, config.entities.day_grid_import_76),
@@ -683,14 +684,10 @@ export const renderGridElements = (
 			)}
 			${createTextWithPopup(
 				'daily_grid_sell_value',
-				!showNonessential ? '311' : '347',
-				!showNonessential
-					? '323'
-					: config.entities?.max_sell_power
-						? '212'
-						: '209',
+				dailySellX,
+				362,
 				data.gridShowDailySell !== true || !data.stateDayGridExport.isValid(),
-				'st10 left-align',
+				'st4 left-align',
 				data.stateDayGridExport.toNum() > 0 ? gridColour : 'grey',
 				data.stateDayGridExport.toPowerString(true, data.decimalPlacesEnergy),
 				(e) => Utils.handlePopup(e, config.entities.day_grid_export_77),
@@ -698,8 +695,8 @@ export const renderGridElements = (
 			)}
 			${createTextWithPopup(
 				'max_sell_power',
-				!showNonessential ? '311' : '347',
-				!showNonessential ? '309' : '198',
+				dailySellX,
+				348,
 				!data.stateMaxSellPower.isValid || !config.entities?.max_sell_power,
 				'st3 left-align',
 				['off', '0'].includes(data.stateSolarSell.state) ? 'grey' : gridColour,
@@ -712,8 +709,8 @@ export const renderGridElements = (
 					? svg`
                         ${createTextWithPopup(
 													'grid_total_power',
-													420,
-													280,
+													gridCx,
+													285,
 													config.entities.grid_ct_power_172 === 'none',
 													`${largeFont !== true ? 'st14' : 'st4'} st8`,
 													gridRealBoxColour,
@@ -744,8 +741,8 @@ export const renderGridElements = (
 					: svg`
                         ${renderText(
 													'grid_total_power',
-													420,
-													280,
+													gridCx,
+													285,
 													config.entities.grid_ct_power_172 === 'none',
 													`${largeFont !== true ? 'st14' : 'st4'} st8`,
 													gridRealBoxColour,
@@ -771,8 +768,8 @@ export const renderGridElements = (
 				: svg`
                     ${createTextWithPopup(
 											'grid_total_power',
-											420,
-											280,
+											gridCx,
+											285,
 											config.entities.grid_ct_power_172 === 'none',
 											`${largeFont !== true ? 'st14' : 'st4'} st8`,
 											gridRealBoxColour,
@@ -800,8 +797,8 @@ export const renderGridElements = (
 			${config.entities?.grid_voltage
 				? renderText(
 						'grid_voltage_display',
-						420,
-						241,
+						gridCx,
+						247,
 						false,
 						`${largeFont !== true ? 'st14' : 'st4'} st8`,
 						gridRealBoxColour,
@@ -812,8 +809,8 @@ export const renderGridElements = (
 			${config.entities?.grid_frequency
 				? renderText(
 						'grid_frequency_display',
-						420,
-						260,
+						gridCx,
+						266,
 						false,
 						`${largeFont !== true ? 'st14' : 'st4'} st8`,
 						gridRealBoxColour,
@@ -1068,10 +1065,10 @@ export const renderGridElements = (
 			)}
 			${renderText(
 				'grid_tie_v_hz_label',
-				[1, 2].includes(config.solar?.mppts) ? 295 : 310,
-				three_phase ? '227' : '220',
+				gridCx - 6,
+				three_phase ? '227' : '221',
 				false,
-				'st3',
+				'st3 right-align',
 				gridTieBusColour,
 				'GRID-TIE',
 				true,

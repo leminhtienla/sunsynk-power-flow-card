@@ -56,12 +56,11 @@ export const renderInverterElements = (
 			? 'grey'
 			: inverterColour;
 
-	// Status text (inverter_status_text): biên phải x=401 (rút thêm 15px so
-	// với x=416 trước đây), tối đa ~42 ký tự/dòng (đo THẬT bằng fonttools
-	// trên font Roboto Regular 9px, ~4.4px/ký tự có biên an toàn). Nếu dài
-	// hơn 1 dòng thì XUỐNG DÒNG (word-wrap tại khoảng trắng gần nhất) thay
-	// vì chỉ cắt "..." như trước.
-	const STATUS_TEXT_MAX_CHARS_PER_LINE = 42;
+	// Status text (inverter_status_text): dời xuống dưới cụm "● Normal" và
+	// trên cụm SOC pin (x=132..254, rộng ~122px, font st-status 8.5px ~4.0px/
+	// ký tự -> tối đa ~30 ký tự/dòng, 2 dòng chứa đủ ~60 ký tự mà không chạm
+	// khung Pin bên trái hay cột EVN mới bên phải).
+	const STATUS_TEXT_MAX_CHARS_PER_LINE = 30;
 	let statusTextLine1 = '';
 	let statusTextLine2 = '';
 	if (data.inverterStatusText) {
@@ -101,13 +100,13 @@ export const renderInverterElements = (
 				stroke="${inverterFlowColour}"
 				pointer-events="all"
 			/>
-			<text x="167" y="306" class="st3 left-align" fill="${inverterColour}">
+			<text x="167" y="302" class="st3 left-align" fill="${inverterColour}">
 				${data.inverterStateMsg}
 			</text>
 			${renderText(
 				'autarkye_value',
-				212,
-				283,
+				213,
+				242,
 				enableAutarky === AutarkyType.No,
 				enableAutarky === AutarkyType.Energy ? 'st4 st8 left-align' : 'st12',
 				inverterColour,
@@ -116,8 +115,8 @@ export const renderInverterElements = (
 			)}
 			${renderText(
 				'ratioe_value',
-				256,
-				283,
+				213,
+				278,
 				enableAutarky === AutarkyType.No,
 				enableAutarky === AutarkyType.Energy ? 'st4 st8 left-align' : 'st12',
 				inverterColour,
@@ -126,8 +125,8 @@ export const renderInverterElements = (
 			)}
 			${renderText(
 				'autarkyp_value',
-				212,
-				283,
+				213,
+				242,
 				enableAutarky === AutarkyType.No,
 				enableAutarky === AutarkyType.Power ? 'st4 st8 left-align' : 'st12',
 				inverterColour,
@@ -136,8 +135,8 @@ export const renderInverterElements = (
 			)}
 			${renderText(
 				'ratiop_value',
-				256,
-				283,
+				213,
+				278,
 				enableAutarky === AutarkyType.No,
 				enableAutarky === AutarkyType.Power ? 'st4 st8 left-align' : 'st12',
 				inverterColour,
@@ -146,8 +145,8 @@ export const renderInverterElements = (
 			)}
 			${renderText(
 				'autarky',
-				212,
-				295,
+				213,
+				255,
 				enableAutarky === AutarkyType.No,
 				'st3 left-align',
 				inverterColour,
@@ -156,8 +155,8 @@ export const renderInverterElements = (
 			)}
 			${renderText(
 				'ratio',
-				256,
-				295,
+				213,
+				291,
 				enableAutarky === AutarkyType.No,
 				'st3 left-align',
 				inverterColour,
@@ -167,13 +166,13 @@ export const renderInverterElements = (
 			<circle
 				id="standby"
 				cx="160"
-				cy="304"
+				cy="300"
 				r="3.5"
 				fill="${data.inverterStateColour}"
 			/>
 			${renderPath(
 				'inverter-path',
-				three_phase ? 'M 180 223 L 180 235' : 'M 180 212 L 180 235',
+				three_phase ? 'M 180 223 L 180 231' : 'M 180 212 L 180 231',
 				true,
 				inverterGroupColour,
 				data.inverterStubLineWidth,
@@ -220,7 +219,7 @@ export const renderInverterElements = (
 					config.inverter?.navigate
 						? svg`
 							<a href="#" @click=${(e) => Utils.handleNavigation(e, config.inverter.navigate)}>
-								<svg xmlns="http://www.w3.org/2000/svg" x="154.5" y="224.75" width="54"
+								<svg xmlns="http://www.w3.org/2000/svg" x="154.5" y="220.75" width="54"
 									height="79" viewBox="0 0 74 91" preserveAspectRatio="xMidYMid meet"
 									opacity="${!data.genericInverterImage ? 0 : 1}">
 									<g transform="translate(0.000000,91.000000) scale(0.100000,-0.100000)"
@@ -230,7 +229,7 @@ export const renderInverterElements = (
 								</svg>
 							</a>`
 						: svg`
-							<svg xmlns="http://www.w3.org/2000/svg" x="154.5" y="224.75" width="54"
+							<svg xmlns="http://www.w3.org/2000/svg" x="154.5" y="220.75" width="54"
 								height="79" viewBox="0 0 74 91" preserveAspectRatio="xMidYMid meet"
 								opacity="${!data.genericInverterImage ? 0 : 1}">
 								<g transform="translate(0.000000,91.000000) scale(0.100000,-0.100000)"
@@ -358,13 +357,13 @@ export const renderInverterElements = (
 			${config.inverter?.navigate
 				? svg`
                     <a href="#" @click=${(e) => Utils.handleNavigation(e, config.inverter.navigate)}>
-                        <image x="155" y="224.75" width="53" height="72"
+                        <image x="155" y="220.75" width="53" height="72"
                             class="${!data.genericInverterImage ? '' : 'st12'}"
                             href="${inverterImg}"
                             preserveAspectRatio="none"/>
                     </a>`
 				: svg`
-                    <image x="155" y="224.75" width="53" height="72"
+                    <image x="155" y="220.75" width="53" height="72"
                         class="${!data.genericInverterImage ? '' : 'st12'}"
                         href="${inverterImg}"
                         preserveAspectRatio="none"/>`}
@@ -489,10 +488,10 @@ export const renderInverterElements = (
 				? svg`
                     ${createTextWithPopup(
 						'inverter_status_text',
-						212,
-						250,
+						132,
+						statusTextLine2 ? 314 : 318,
 						!!statusTextLine1,
-						'st3 left-align',
+						'st-status left-align',
 						inverterColour,
 						statusTextLine1,
 						(e) =>
@@ -502,10 +501,10 @@ export const renderInverterElements = (
 											statusTextLine2
 												? createTextWithPopup(
 														'inverter_status_text_line2',
-														212,
-														261,
+														132,
+														324,
 														true,
-														'st3 left-align',
+														'st-status left-align',
 														inverterColour,
 														statusTextLine2,
 														(e) =>

@@ -12,6 +12,8 @@ import { styles } from './style';
 import {
 	CardStyle,
 	DataDto,
+	HomeLoadExtraItemConfig,
+	HomeLoadExtraItemData,
 	InverterModel,
 	InverterSettings,
 	sunsynkPowerFlowCardConfig,
@@ -110,6 +112,7 @@ export class SunsynkPowerFlowCard extends LitElement {
 	// Performance: track only entities we care about and last seen states
 	private _trackedEntityIds: Set<string> = new Set();
 	private _lastEntityStates: Map<string, string> = new Map();
+	private _trackedExtraAttrs: Map<string, string> = new Map();
 	// Per-render cache to avoid repeated convertToCustomEntity work
 	private _entityCache: Map<string, CustomEntity> = new Map();
 	// Cache for colour conversions
@@ -197,6 +200,20 @@ export class SunsynkPowerFlowCard extends LitElement {
 				if (cur !== prev) {
 					changed = true;
 					break;
+				}
+			}
+			if (!changed && this._trackedExtraAttrs.size > 0) {
+				for (const [key, prev] of this._trackedExtraAttrs) {
+					const sep = key.indexOf('::');
+					const entityId = key.slice(0, sep);
+					const attr = key.slice(sep + 2);
+					const cur = String(
+						this.hass?.states?.[entityId]?.attributes?.[attr] ?? '',
+					);
+					if (cur !== prev) {
+						changed = true;
+						break;
+					}
 				}
 			}
 			return changed;
@@ -431,6 +448,7 @@ export class SunsynkPowerFlowCard extends LitElement {
 		// Clear per-render cache and rebuild tracked entities for this render
 		this._entityCache.clear();
 		this._trackedEntityIds.clear();
+		this._trackedExtraAttrs.clear();
 		globalData.hass = this.hass;
 		const config = this._config;
 
@@ -3144,6 +3162,10 @@ export class SunsynkPowerFlowCard extends LitElement {
 			customGridIconColour,
 			maximumSOC,
 			batteryCount,
+			homeLoadExtraItems: this.resolveHomeLoadExtraItems(
+				config.load?.extra_items,
+				loadColour,
+			),
 		};
 
 		let template: TemplateResult | null = null;
@@ -3485,10 +3507,257 @@ export class SunsynkPowerFlowCard extends LitElement {
 		// Reset runtime caches on config change
 		this._lastEntityStates.clear();
 		this._trackedEntityIds.clear();
+		this._trackedExtraAttrs.clear();
 		this._entityCache.clear();
 		this._colorCache.clear();
 
 		this.requestUpdate();
+	}
+
+	/**
+	 * Đọc và định dạng danh sách thông tin bổ sung dưới ô HOME LOAD
+	 * (`config.load.extra_items`): hỗ trợ mọi loại entity (nhiệt độ, công suất,
+	 * switch, máy rửa chén, máy hút bụi...), tự đăng ký theo dõi state/attribute
+	 * để shouldUpdate tự re-render khi dữ liệu thay đổi.
+	 */
+	private resolveHomeLoadExtraItems(
+		items: HomeLoadExtraItemConfig[] | undefined,
+		defaultActiveColour: string,
+	): HomeLoadExtraItemData[] {
+		if (!Array.isArray(items) || items.length === 0) return [];
+
+		const DEFAULT_INACTIVE_STATES = new Set([
+			'off',
+			'idle',
+			'standby',
+			'docked',
+			'paused',
+			'closed',
+			'none',
+			'false',
+			'0',
+			'unknown',
+			'unavailable',
+			'finished',
+			'complete',
+			'completed',
+		]);
+
+		const readRaw = (
+			entityId: string | undefined,
+			attr?: string,
+		): {
+			raw: string;
+			valid: boolean;
+			uom: string;
+			friendlyName: string;
+			attrIcon?: string;
+		} => {
+			if (!entityId || entityId === 'none') {
+				return { raw: '', valid: false, uom: '', friendlyName: '' };
+			}
+			this._trackedEntityIds.add(entityId);
+			const haState = this.hass?.states?.[entityId];
+			if (!haState) {
+				return { raw: '', valid: false, uom: '', friendlyName: '' };
+			}
+			this._lastEntityStates.set(entityId, String(haState.state ?? ''));
+			let rawVal: unknown = haState.state;
+			if (attr) {
+				rawVal = haState.attributes?.[attr];
+				this._trackedExtraAttrs.set(
+					`${entityId}::${attr}`,
+					String(rawVal ?? ''),
+				);
+			}
+			const raw = rawVal == null ? '' : String(rawVal).trim();
+			const lower = raw.toLowerCase();
+			const valid =
+				raw !== '' && lower !== 'unknown' && lower !== 'unavailable';
+			return {
+				raw,
+				valid,
+				uom: attr ? '' : String(haState.attributes?.unit_of_measurement ?? ''),
+				friendlyName: String(haState.attributes?.friendly_name ?? ''),
+				attrIcon: haState.attributes?.icon
+					? String(haState.attributes.icon)
+					: undefined,
+			};
+		};
+
+		const formatVal = (
+			raw: string,
+			valid: boolean,
+			uom: string,
+			overrideUnit?: string,
+			decimals?: number,
+			stateMap?: Record<string, string>,
+		): { text: string; isNum: boolean; numVal: number; finalUnit: string } => {
+			const finalUnit = overrideUnit !== undefined ? overrideUnit : uom;
+			if (!valid) {
+				return { text: '--', isNum: false, numVal: NaN, finalUnit };
+			}
+			if (stateMap) {
+				if (stateMap[raw] !== undefined) {
+					return {
+						text: stateMap[raw],
+						isNum: false,
+						numVal: NaN,
+						finalUnit,
+					};
+				}
+				const mappedLower = stateMap[raw.toLowerCase()];
+				if (mappedLower !== undefined) {
+					return {
+						text: mappedLower,
+						isNum: false,
+						numVal: NaN,
+						finalUnit,
+					};
+				}
+			}
+			const numVal = Number(raw);
+			const isNum = raw !== '' && Number.isFinite(numVal);
+			if (isNum) {
+				const autoDecimals =
+					decimals !== undefined
+						? decimals
+						: finalUnit.includes('°') || finalUnit.toLowerCase() === 'kw'
+							? 1
+							: finalUnit === '%' || finalUnit.toLowerCase() === 'w'
+								? 0
+								: Number.isInteger(numVal)
+									? 0
+									: 1;
+				const formattedNum = Utils.formatNumberLocale(numVal, autoDecimals);
+				if (!finalUnit) {
+					return { text: formattedNum, isNum: true, numVal, finalUnit };
+				}
+				const tightUnit =
+					finalUnit.startsWith('°') || finalUnit === '%' || finalUnit === 'p';
+				return {
+					text: tightUnit
+						? `${formattedNum}${finalUnit}`
+						: `${formattedNum} ${finalUnit}`,
+					isNum: true,
+					numVal,
+					finalUnit,
+				};
+			}
+			return {
+				text: finalUnit ? `${raw} ${finalUnit}` : raw,
+				isNum: false,
+				numVal: NaN,
+				finalUnit,
+			};
+		};
+
+		const results: HomeLoadExtraItemData[] = [];
+
+		for (const item of items) {
+			if (!item || !item.entity) continue;
+			const main = readRaw(item.entity, item.attribute);
+			const extra = item.extra_entity
+				? readRaw(item.extra_entity, item.extra_attribute)
+				: null;
+
+			const mainFmt = formatVal(
+				main.raw,
+				main.valid,
+				main.uom,
+				item.unit,
+				item.decimals,
+				item.state_map,
+			);
+			const extraFmt = extra
+				? formatVal(
+						extra.raw,
+						extra.valid,
+						extra.uom,
+						item.extra_unit,
+						item.extra_decimals,
+					)
+				: null;
+
+			// Xác định trạng thái hoạt động để đổi màu (sáng khi chạy, grey khi tắt/rảnh)
+			let isActive = false;
+			if (main.valid) {
+				const lower = main.raw.toLowerCase();
+				if (Array.isArray(item.active_states) && item.active_states.length) {
+					isActive = item.active_states.some(
+						(s) => s.toLowerCase() === lower,
+					);
+				} else if (
+					Array.isArray(item.inactive_states) &&
+					item.inactive_states.length
+				) {
+					isActive = !item.inactive_states.some(
+						(s) => s.toLowerCase() === lower,
+					);
+				} else if (item.active_above !== undefined && mainFmt.isNum) {
+					isActive = mainFmt.numVal > item.active_above;
+				} else if (mainFmt.isNum) {
+					// Nhiệt độ / độ ẩm / % pin luôn là thông tin hữu ích -> sáng mặc định
+					const alwaysShowUnit =
+						mainFmt.finalUnit.includes('°') || mainFmt.finalUnit === '%';
+					isActive = alwaysShowUnit || Math.abs(mainFmt.numVal) >= 1;
+				} else {
+					isActive = !DEFAULT_INACTIVE_STATES.has(lower);
+				}
+			}
+
+			if (item.hide_when_inactive && !isActive) {
+				continue;
+			}
+
+			// Ghép giá trị hiển thị: với switch/binary_sensor có extra_entity
+			// (VD bơm nước + cảm biến W), khi ON hiện công suất W thay vì chữ "on"
+			const domain = item.entity.split('.')[0];
+			const isToggleDomain =
+				domain === 'switch' ||
+				domain === 'binary_sensor' ||
+				domain === 'input_boolean' ||
+				domain === 'light' ||
+				domain === 'fan';
+
+			let valueText = mainFmt.text;
+			if (extra && extra.valid && extraFmt) {
+				if (isToggleDomain) {
+					if (isActive) {
+						valueText = extraFmt.text;
+					}
+				} else {
+					const extraNonZero = !extraFmt.isNum || Math.abs(extraFmt.numVal) > 0;
+					if (extraNonZero) {
+						valueText = `${mainFmt.text} ${extraFmt.text}`;
+					}
+				}
+			}
+
+			const activeColour = item.colour
+				? this.colourConvert(item.colour)
+				: defaultActiveColour;
+			const inactiveColour = item.inactive_colour
+				? this.colourConvert(item.inactive_colour)
+				: 'grey';
+
+			const fallbackName =
+				main.friendlyName ||
+				item.entity.split('.').slice(1).join('.').replace(/_/g, ' ');
+
+			results.push({
+				entity: item.entity,
+				tapEntity: item.tap_entity || item.entity,
+				navigate: item.navigate,
+				name: item.name || fallbackName,
+				icon: item.icon ?? main.attrIcon,
+				valueText,
+				colour: isActive ? activeColour : inactiveColour,
+				isActive,
+			});
+		}
+
+		return results;
 	}
 
 	getCardSize() {

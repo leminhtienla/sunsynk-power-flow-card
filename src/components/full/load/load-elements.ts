@@ -1006,9 +1006,10 @@ const renderHomeLoadExtraItems = (
 	if (!items || items.length === 0) return '';
 
 	// Vùng ô vàng ngay dưới nhãn "HOME LOAD" (y=157) và trên cụm
-	// "DAILY GRID SELL / BUY" (y=362): x=337..460 (rộng 123px), y=166..348
-	// (cao 182px). Tự co giãn chiều cao dòng theo số mục cấu hình.
-	const panelX = [1, 2].includes(config.solar?.mppts) ? 337 : 347;
+	// "DAILY GRID SELL / BUY" (y=362): x=345..460 (rộng 115px, tạo khe hở
+	// 16px bên phải cột Grid cân đối với khe bên trái cạnh Autarky/Ratio),
+	// y=166..348 (cao 182px). Tự co giãn chiều cao dòng theo số mục cấu hình.
+	const panelX = [1, 2].includes(config.solar?.mppts) ? 345 : 354;
 	const panelRight = 460;
 	const panelW = panelRight - panelX;
 	const panelY = 166;

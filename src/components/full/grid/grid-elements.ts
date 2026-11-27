@@ -113,8 +113,8 @@ export const renderGridElements = (
 	const isLowMppt = [1, 2].includes(config.solar?.mppts);
 	const gridBoxX = isLowMppt ? 259 : 274;
 	const gridCx = gridBoxX + 35;
-	const dailySellX = isLowMppt ? 336 : 344;
-	const dailyBuyX = isLowMppt ? 406 : 408;
+	const dailySellX = isLowMppt ? 345 : 354;
+	const dailyBuyX = isLowMppt ? 409 : 412;
 
 	return html`
 		<!-- Grid Elements -->
